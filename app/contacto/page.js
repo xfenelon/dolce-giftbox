@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import CartDrawer from "../components/CartDrawer";
+import { useCart } from "../context/CartContext";
+import SearchOverlay from "../components/SearchOverlay";
 import {
   ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign, Phone, Mail,
 } from "lucide-react";
@@ -24,6 +27,9 @@ function ContactIllustration() {
 
 export default function ContactoPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+const { totalCount } = useCart();
+  const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [notRobot, setNotRobot] = useState(false);
   const [sent, setSent] = useState(false);
@@ -66,6 +72,8 @@ export default function ContactoPage() {
         .nav-links a, .footer-nav a { color: inherit; text-decoration: none; }
         .nav-icons { display:flex; align-items:center; gap: 18px; }
         .icon-btn { background:none; border:none; cursor:pointer; color:var(--olive); position:relative; }
+        .cart-badge { position:absolute; top:-8px; right:-9px; background:var(--olive); color:var(--white); font-size:10px;
+          width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
         .menu-toggle { display:none; background:none; border:none; cursor:pointer; color:var(--olive); }
         .mobile-menu { position:fixed; inset:0; background:var(--white); z-index:60; display:flex; flex-direction:column;
           align-items:center; justify-content:center; gap:28px; }
@@ -152,9 +160,12 @@ export default function ContactoPage() {
           </ul>
         </div>
         <div className="nav-icons">
-          <button className="icon-btn" aria-label="Buscar"><Search size={19} /></button>
+          <button className="icon-btn" aria-label="Buscar" onClick={() => setSearchOpen(true)}><Search size={19} /></button>
           <button className="icon-btn" aria-label="Cuenta"><User size={19} /></button>
-          <button className="icon-btn" aria-label="Carrito"><ShoppingBag size={19} /></button>
+          <button className="icon-btn" aria-label="Carrito" onClick={() => setCartOpen(true)}>
+  <ShoppingBag size={19} />
+  {totalCount > 0 && <span className="cart-badge">{totalCount}</span>}
+</button>
           <button className="menu-toggle" aria-label="Menú" onClick={() => setMenuOpen(true)}><Menu size={22} /></button>
         </div>
       </header>
@@ -267,6 +278,8 @@ export default function ContactoPage() {
       <a className="whatsapp-fab" href="https://wa.me/573113290390" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
         <MessageCircle size={26} />
       </a>
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }

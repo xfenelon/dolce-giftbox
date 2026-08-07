@@ -2,15 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import CartDrawer from "../components/CartDrawer";
+import SearchOverlay from "../components/SearchOverlay";
 import { useCart } from "../context/CartContext";
 import {
-  ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign, ImageIcon,
+  ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign, ImageIcon, Minus, Plus, ChevronDown,
 } from "lucide-react";
-import { PACKAGING } from "../data/packaging";
+import { supabase } from "../lib/supabase";
+import { ARMA_ITEMS, ARMA_CATEGORIES } from "../data/armaItems";
 
 const FONT_IMPORT =
   "@import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');";
+
+const TABS = ["Empaques", ...ARMA_CATEGORIES];
+
+const TAB_INTROS = {
+  "Empaques": "Elige el empaque que más te guste y luego agrega los productos que quieras incluir. ¿No sabes si todo cabe en el empaque elegido? Escríbenos por WhatsApp y te ayudamos a armarlo.",
+  "Cuidado personal": "Jabones, serums, cremas y más — productos pensados para consentir la piel y regalar un momento de bienestar.",
+  "Hogar y ambiente": "Velas, aromas, flores y detalles decorativos para llenar de calidez cualquier espacio.",
+  "Productos comestibles": "Cafés, tés, dulces y bebidas para acompañar cualquier ocasión con un toque delicioso.",
+  "Para hombre": "Detalles prácticos y con estilo, pensados especialmente para él.",
+  "Para bebé": "Tejidos amigurumi, ropita y accesorios tiernos para dar la bienvenida a los más pequeños.",
+};
 
 function ImageBox({ ratio = "1 / 1", label = "Imagen pendiente" }) {
   return (
@@ -33,11 +47,134 @@ function PackagingPhoto({ photo, alt, label }) {
   );
 }
 
+function ArmaItemPhoto({ folder, slug, alt, label }) {
+  const [error, setError] = useState(false);
+  if (error) {
+    return <ImageBox label={label} />;
+  }
+  return (
+    <div className="packaging-photo-frame">
+      <img src={`/arma-productos/${folder}/${slug}.jpg`} alt={alt} onError={() => setError(true)} />
+    </div>
+  );
+}
+
+function PackagingCard({ pkg, onChoose }) {
+  const priceLabel = `$${pkg.price.toLocaleString("es-CO")}`;
+  return (
+    <div className={`packaging-card ${!pkg.available ? "unavailable" : ""}`}>
+      {!pkg.available && <span className="packaging-badge">Agotado</span>}
+      <PackagingPhoto photo={pkg.photo} alt={pkg.name} label={pkg.name} />
+      <h3>{pkg.name}</h3>
+      <p className="packaging-material">{pkg.material}</p>
+      <p className="packaging-dims">Dimensiones: {pkg.dimensions}</p>
+      <p className="packaging-price">{priceLabel}</p>
+      <button
+        className="packaging-btn"
+        disabled={!pkg.available}
+        onClick={() => onChoose({ ...pkg, priceLabel })}
+      >
+        {pkg.available ? "Elegir este empaque" : "Agotado"}
+      </button>
+    </div>
+  );
+}
+
+function ArmaProductCard({ item, addItem }) {
+  const [qty, setQty] = useState(1);
+
+  const handleAdd = () => {
+    addItem({
+      slug: item.slug,
+      name: item.name,
+      priceLabel: item.priceLabel,
+      price: item.price,
+      image: `/arma-productos/${item.folder}/${item.slug}.jpg`,
+      qty,
+    });
+    setQty(1);
+  };
+
+  return (
+    <div className={`packaging-card arma-card ${!item.available ? "unavailable" : ""}`}>
+      {!item.available && <span className="packaging-badge">Agotado</span>}
+      <ArmaItemPhoto folder={item.folder} slug={item.slug} alt={item.name} label={item.name} />
+      <h3>{item.name}</h3>
+      <p className="arma-desc">{item.description}</p>
+      <p className="packaging-price">{item.priceLabel}</p>
+      {item.available && (
+        <div className="arma-qty-control">
+          <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Menos"><Minus size={13} /></button>
+          <span>{qty}</span>
+          <button onClick={() => setQty((q) => q + 1)} aria-label="Más"><Plus size={13} /></button>
+        </div>
+      )}
+      <button className="packaging-btn" disabled={!item.available} onClick={handleAdd}>
+        {item.available ? "Agregar al carrito" : "Agotado"}
+      </button>
+    </div>
+  );
+}
+
+const FAQS = [
+  {
+    q: "¿Qué valor tiene el envío de los detalles?",
+    a: "Envío gratis en Medellín. $5.000 para municipios del área metropolitana. $15.000 envíos fuera de Medellín.",
+  },
+  {
+    q: "¿Cuánto tiempo tarda en llegar mi pedido?",
+    a: "Medellín: al día siguiente del pago o en la fecha que programes. Resto del país: de 2 a 4 días hábiles.",
+  },
+  {
+    q: "¿Puedo comprar solo el empaque?",
+    a: "No, nuestros empaques se venden exclusivamente como parte de un kit de regalo.",
+  },
+  {
+    q: "¿Puedo comprar los productos por separado?",
+    a: "Sí, los productos se venden de forma individual, excepto los peluches, que están disponibles únicamente en los kits de regalo.",
+  },
+  {
+    q: "¿Cuál es el pedido mínimo para los detalles?",
+    a: "Para adquirir nuestros empaques, debes incluir un mínimo de 3 productos de nuestro catálogo. El empaque no cuenta dentro de ese mínimo.",
+  },
+];
+
+function FaqItem({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="faq-item">
+      <button className="faq-question" onClick={() => setOpen(!open)}>
+        <span>{q}</span>
+        <ChevronDown size={18} className={`faq-icon ${open ? "open" : ""}`} />
+      </button>
+      {open && <p className="faq-answer">{a}</p>}
+    </div>
+  );
+}
 export default function ArmaTuDetallePage() {
+  const searchParams = useSearchParams();
+  const categoriaFromUrl = searchParams.get("categoria");
+  const initialTab = TABS.includes(categoriaFromUrl) ? categoriaFromUrl : TABS[0];
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const { totalCount } = useCart();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const { totalCount, addItem } = useCart();
+  const [packaging, setPackaging] = useState([]);
+
+  useEffect(() => {
+    async function fetchPackaging() {
+      const { data, error } = await supabase.from("empaques").select("*").order("id");
+      if (error) {
+        console.error("Error cargando empaques:", error);
+        return;
+      }
+      setPackaging(data);
+    }
+    fetchPackaging();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -49,6 +186,9 @@ export default function ArmaTuDetallePage() {
     const message = `Hola! Quiero armar mi detalle. Elegí el empaque: "${pkg.name}" (${pkg.dimensions}, ${pkg.priceLabel}). ¿Me ayudan a elegir qué va adentro? 🎁`;
     window.open(`https://wa.me/573113290390?text=${encodeURIComponent(message)}`, "_blank");
   };
+
+  const isPackagingTab = activeTab === "Empaques";
+  const filteredArmaItems = ARMA_ITEMS.filter((item) => item.category === activeTab);
 
   return (
     <div className="dolce-root">
@@ -114,6 +254,28 @@ export default function ArmaTuDetallePage() {
         .packaging-btn:hover { background: var(--olive); }
         .packaging-btn:disabled { background: var(--tan); cursor: not-allowed; }
 
+        .arma-tabs { display:flex; flex-wrap: wrap; justify-content:center; gap: 10px; margin: 8px 0 40px; }
+        .arma-tab { border: 1px solid var(--taupe); background: none; padding: 10px 20px; border-radius: 999px;
+          font-family:'Marcellus'; font-size: 13px; cursor:pointer; color: var(--olive); transition: all .2s; }
+        .arma-tab.active { background: var(--olive); border-color: var(--olive); color: var(--white); }
+        .arma-tab:hover:not(.active) { background: var(--cream); }
+
+        .arma-desc { font-size: 12px; color: var(--olive); opacity: .8; line-height: 1.5; margin: 0 0 10px; min-height: 34px; }
+        .arma-qty-control { display:flex; align-items:center; justify-content:center; gap: 4px; border:1px solid var(--tan);
+          border-radius: 999px; overflow:hidden; width: fit-content; margin: 0 auto 12px; }
+        .arma-qty-control button { background:none; border:none; padding: 8px 12px; cursor:pointer; color: var(--olive); display:flex; }
+        .arma-qty-control span { padding: 0 6px; font-size: 13px; color: var(--olive); }
+
+        .faq-section { max-width: 620px; margin: 50px auto 0; padding: 0 6vw; }
+        .faq-title { text-align:center; font-size: 24px; font-weight: 400; color: var(--olive); margin: 0 0 26px; }
+        .faq-item { border-bottom: 1px solid var(--tan); }
+        .faq-question { width:100%; display:flex; align-items:center; justify-content:space-between; gap: 12px;
+          background:none; border:none; padding: 18px 0; cursor:pointer; text-align:left;
+          font-family:'Marcellus'; font-size: 15px; color: var(--ink); }
+        .faq-icon { color: var(--olive); flex-shrink:0; transition: transform .25s; }
+        .faq-icon.open { transform: rotate(180deg); }
+        .faq-answer { font-size: 13.5px; color: var(--olive); opacity: .85; line-height: 1.7; padding: 0 0 20px; margin:0; }
+        .faq-contact { text-align:center; font-size: 13px; color: var(--taupe); margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--tan); }
         .footer { background: var(--blush); color: var(--olive); padding: 50px 6vw 26px; text-align:center; }
         .footer-icon { margin-bottom: 26px; display:flex; justify-content:center; color: var(--olive); }
         .footer-nav { display:flex; justify-content:center; gap: 28px; list-style:none; padding:0; margin: 0 0 26px; flex-wrap: wrap; }
@@ -147,7 +309,7 @@ export default function ArmaTuDetallePage() {
           </ul>
         </div>
         <div className="nav-icons">
-          <button className="icon-btn" aria-label="Buscar"><Search size={19} /></button>
+          <button className="icon-btn" aria-label="Buscar" onClick={() => setSearchOpen(true)}><Search size={19} /></button>
           <button className="icon-btn" aria-label="Cuenta"><User size={19} /></button>
           <button className="icon-btn" aria-label="Carrito" onClick={() => setCartOpen(true)}>
             <ShoppingBag size={19} />
@@ -173,34 +335,42 @@ export default function ArmaTuDetallePage() {
       <div className="page-header">
         <p className="breadcrumbs"><Link href="/">Inicio</Link> <span>.</span> <span className="active">Arma tu detalle</span></p>
         <h1>Arma tu detalle</h1>
-        <p>Elige el empaque que más te guste. Muy pronto podrás elegir también cada artículo que va adentro — mientras tanto, cuéntanos por WhatsApp qué te gustaría incluir y te ayudamos a armarlo.</p>
+        <p>{TAB_INTROS[activeTab]}</p>
       </div>
 
       <section className="section">
+        <div className="arma-tabs">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              className={`arma-tab ${activeTab === tab ? "active" : ""}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
         <div className="packaging-grid">
-          {PACKAGING.map((pkg) => {
-            const priceLabel = `$${pkg.price.toLocaleString("es-CO")}`;
-            return (
-              <div key={pkg.id} className={`packaging-card ${!pkg.available ? "unavailable" : ""}`}>
-                {!pkg.available && <span className="packaging-badge">Agotado</span>}
-                <PackagingPhoto photo={pkg.photo} alt={pkg.name} label={pkg.name} />
-                <h3>{pkg.name}</h3>
-                <p className="packaging-material">{pkg.material}</p>
-                <p className="packaging-dims">Dimensiones: {pkg.dimensions}</p>
-                <p className="packaging-price">{priceLabel}</p>
-                <button
-                  className="packaging-btn"
-                  disabled={!pkg.available}
-                  onClick={() => handleChoosePackaging({ ...pkg, priceLabel })}
-                >
-                  {pkg.available ? "Elegir este empaque" : "Agotado"}
-                </button>
-              </div>
-            );
-          })}
+         {isPackagingTab
+            ? packaging.map((pkg) => (
+                <PackagingCard key={pkg.slug} pkg={pkg} onChoose={handleChoosePackaging} />
+              ))
+            : filteredArmaItems.map((item) => (
+                <ArmaProductCard key={item.slug} item={item} addItem={addItem} />
+              ))}
         </div>
       </section>
 
+<div className="faq-section">
+        <h2 className="faq-title">Preguntas Frecuentes</h2>
+        {FAQS.map((item) => (
+          <FaqItem key={item.q} q={item.q} a={item.a} />
+        ))}
+        <p className="faq-contact">
+          WhatsApp: +57 311 329 0390 · Instagram: @dolcegiftbox
+        </p>
+      </div>
       <footer className="footer">
         <div className="footer-icon"><AtSign size={20} /></div>
         <ul className="footer-nav">
@@ -223,6 +393,7 @@ export default function ArmaTuDetallePage() {
       </a>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }

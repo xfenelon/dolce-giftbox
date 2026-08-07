@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import CartDrawer from "./components/CartDrawer";
+import SearchOverlay from "./components/SearchOverlay";
 import { useCart } from "./context/CartContext";
 import { getProductBySlug } from "./data/products";
 import {
@@ -141,6 +142,7 @@ const TESTIMONIALS = [
 export default function DolceGiftboxHome() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 const { addItem, totalCount } = useCart();
 const featured = getProductBySlug("bianca");
   const [scrolled, setScrolled] = useState(false);
@@ -363,7 +365,7 @@ const featured = getProductBySlug("bianca");
 </ul>
         </div>
         <div className="nav-icons">
-          <button className="icon-btn" aria-label="Buscar"><Search size={19} /></button>
+          <button className="icon-btn" aria-label="Buscar" onClick={() => setSearchOpen(true)}><Search size={19} /></button>
           <button className="icon-btn" aria-label="Cuenta"><User size={19} /></button>
           <button className="icon-btn" aria-label="Carrito" onClick={() => setCartOpen(true)}>
   <ShoppingBag size={19} />
@@ -397,51 +399,7 @@ const featured = getProductBySlug("bianca");
   </div>
 </section>
 
-      <Reveal>
-  <section className="section product-detail">
-    <div className="pd-main"><FeaturedPhoto slug={featured.slug} alt={featured.name} label={featured.name} /></div>
-    <div className="pd-info">
-      <h3>{featured.name}</h3>
-      <p className="pd-price">{featured.priceLabel}</p>
-      <p className="pd-installments">{featured.installmentLabel}</p>
-      <p className="pd-label">Color del listón para la cajita: {ribbon}</p>
-      <div className="ribbon-options">
-        {["Blanco", "Café", "Rosa Palo"].map((c) => (
-          <button key={c} className={`ribbon-chip ${ribbon === c ? "active" : ""}`} onClick={() => setRibbon(c)}>{c}</button>
-        ))}
-      </div>
-      <div className="qty-row">
-        <div className="qty-control">
-          <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Menos"><Minus size={14} /></button>
-          <span>{qty}</span>
-          <button onClick={() => setQty((q) => q + 1)} aria-label="Más"><Plus size={14} /></button>
-        </div>
-        <button
-          className="btn-add-cart"
-          onClick={() =>
-            addItem({
-              slug: featured.slug,
-              name: featured.name,
-              priceLabel: featured.priceLabel,
-              price: featured.price,
-              ribbon,
-              qty,
-            })
-          }
-        >
-          Agregar al carrito
-        </button>
-      </div>
-      <ul className="pd-bullets">
-        {featured.bullets.map((b, i) => (
-          <li key={i}>• {b}</li>
-        ))}
-      </ul>
-      <Link href={`/productos/${featured.slug}`} className="link-underline">Ver más</Link>
-    </div>
-  </section>
-</Reveal>
-
+     
     
 
       <section className="section">
@@ -566,6 +524,7 @@ const featured = getProductBySlug("bianca");
   <MessageCircle size={26} />
 </a>
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+        <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }

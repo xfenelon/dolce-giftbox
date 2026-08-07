@@ -7,6 +7,9 @@ import {
   ImageIcon, AtSign, MessageCircle, SlidersHorizontal, ChevronDown,
 } from "lucide-react";
 import { PRODUCTS, CATEGORIES } from "../data/products";
+import CartDrawer from "../components/CartDrawer";
+import { useCart } from "../context/CartContext";
+import SearchOverlay from "../components/SearchOverlay";
 import { useSearchParams } from "next/navigation";
 const FONT_IMPORT =
   "@import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');";
@@ -78,6 +81,9 @@ export default function ProductosPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+const { totalCount } = useCart();
+  const [searchOpen, setSearchOpen] = useState(false);
   const [sort, setSort] = useState(null);
   const searchParams = useSearchParams();
 const [category, setCategory] = useState(searchParams.get("categoria") || "Todos los productos");
@@ -137,6 +143,8 @@ const [category, setCategory] = useState(searchParams.get("categoria") || "Todos
         .nav-links a, .footer-nav a { color: inherit; text-decoration: none; }
         .nav-icons { display:flex; align-items:center; gap: 18px; }
         .icon-btn { background:none; border:none; cursor:pointer; color:var(--olive); position:relative; }
+        .cart-badge { position:absolute; top:-8px; right:-9px; background:var(--olive); color:var(--white); font-size:10px;
+          width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
         .menu-toggle { display:none; background:none; border:none; cursor:pointer; color:var(--olive); }
         .mobile-menu { position:fixed; inset:0; background:var(--white); z-index:60; display:flex; flex-direction:column;
           align-items:center; justify-content:center; gap:28px; }
@@ -246,9 +254,12 @@ const [category, setCategory] = useState(searchParams.get("categoria") || "Todos
           </ul>
         </div>
         <div className="nav-icons">
-          <button className="icon-btn" aria-label="Buscar"><Search size={19} /></button>
+          <button className="icon-btn" aria-label="Buscar" onClick={() => setSearchOpen(true)}><Search size={19} /></button>
           <button className="icon-btn" aria-label="Cuenta"><User size={19} /></button>
-          <button className="icon-btn" aria-label="Carrito"><ShoppingBag size={19} /></button>
+          <button className="icon-btn" aria-label="Carrito" onClick={() => setCartOpen(true)}>
+  <ShoppingBag size={19} />
+  {totalCount > 0 && <span className="cart-badge">{totalCount}</span>}
+</button>
           <button className="menu-toggle" aria-label="Menú" onClick={() => setMenuOpen(true)}><Menu size={22} /></button>
         </div>
       </header>
@@ -307,8 +318,16 @@ const [category, setCategory] = useState(searchParams.get("categoria") || "Todos
       )}
 
      <div className="page-header">
-  <p className="breadcrumbs"><Link href="/">Inicio</Link> <span>.</span> <span className="active">Detalles prediseñados</span></p>
-  <h1>Detalles prediseñados</h1>
+  <p className="breadcrumbs">
+  <Link href="/">Inicio</Link> <span>.</span>{" "}
+  <Link href="/productos">Detalles prediseñados</Link>
+  {category !== "Todos los productos" && (
+    <>
+      {" "}<span>.</span> <span className="active">{category}</span>
+    </>
+  )}
+</p>
+  <h1>{category === "Todos los productos" ? "Detalles prediseñados" : category}</h1>
   <button className="filter-toggle" onClick={() => setFiltersOpen(true)}>
     <SlidersHorizontal size={14} /> Filtrar
   </button>
@@ -383,6 +402,8 @@ const [category, setCategory] = useState(searchParams.get("categoria") || "Todos
       <a className="whatsapp-fab" href="https://wa.me/573113290390" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
         <MessageCircle size={26} />
       </a>
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+   <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }

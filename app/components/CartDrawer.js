@@ -13,7 +13,7 @@ export default function CartDrawer({ open, onClose }) {
   const formattedTotal = `$${totalPrice.toLocaleString("es-CO")}`;
 
   const whatsappMessage = items
-    .map((i) => `- ${i.name} (listón ${i.ribbon}) x${i.qty}`)
+    .map((i) => `- ${i.name}${i.ribbon ? ` (listón ${i.ribbon})` : ""} x${i.qty}`)
     .join("%0A");
 
   return (
@@ -64,11 +64,15 @@ export default function CartDrawer({ open, onClose }) {
             {items.map((item) => (
               <div className="cart-item" key={`${item.slug}-${item.ribbon}`}>
                 <div className="cart-item-photo">
-                  <img src={`/productos/${item.slug}-1.jpg`} alt={item.name} onError={(e) => { e.target.style.display = "none"; }} />
+                  <img
+                    src={item.image || `/productos/${item.slug}-1.jpg`}
+                    alt={item.name}
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
                 </div>
                 <div className="cart-item-info">
                   <h4>{item.name}</h4>
-                  <p className="cart-item-ribbon">Listón: {item.ribbon}</p>
+                  {item.ribbon && <p className="cart-item-ribbon">Listón: {item.ribbon}</p>}
                   <div className="cart-item-controls">
                     <div className="cart-item-qty">
                       <button onClick={() => updateQty(item.slug, item.ribbon, item.qty - 1)} aria-label="Menos"><Minus size={12} /></button>
