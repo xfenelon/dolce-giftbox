@@ -1,0 +1,128 @@
+// Catálogo de empaques disponibles para "Arma tu detalle".
+// Las fotos van en public/empaques/{photo}.jpg
+// "available: false" = agotado (se muestra pero no se puede seleccionar).
+
+export const PACKAGING = [
+  {
+    id: "caja-grande-madera",
+    name: "Caja grande madera",
+    material: "Madera",
+    dimensions: "32 x 25 x 9 cm",
+    price: 53900,
+    available: true,
+    photo: "cajagrande",
+  },
+  {
+    id: "caja-mediana-madera",
+    name: "Caja mediana madera",
+    material: "Madera",
+    dimensions: "23 x 25 x 10 cm",
+    price: 43900,
+    available: true,
+    photo: "cajamediana",
+  },
+  {
+    id: "caja-pequena-madera",
+    name: "Caja pequeña madera",
+    material: "Madera",
+    dimensions: "14 x 16 x 7 cm",
+    price: 29700,
+    available: false,
+    photo: "cajapequena",
+  },
+  {
+    id: "corazon-madera-grande",
+    name: "Corazón madera grande",
+    material: "Madera",
+    dimensions: "22 x 21 x 8 cm",
+    price: 34200,
+    available: true,
+    photo: "corazongrande",
+  },
+  {
+    id: "corazon-madera-pequena",
+    name: "Corazón madera pequeña",
+    material: "Madera",
+    dimensions: "20 x 17 x 8 cm",
+    price: 29200,
+    available: true,
+    photo: "corazonpequeno",
+  },
+  {
+    id: "estrella-madera",
+    name: "Estrella madera",
+    material: "Madera",
+    dimensions: "21.5 cm",
+    price: 33400,
+    available: true,
+    photo: "estrella",
+  },
+  {
+    id: "caja-letrero-madera",
+    name: "Caja letrero de madera",
+    material: "Madera",
+    dimensions: "23 x 25 x 32 cm",
+    price: 40600,
+    available: true,
+    photo: "letrero",
+  },
+  {
+    id: "cesta-croche",
+    name: "Cesta de croché",
+    material: "Croché",
+    dimensions: "10 x 20 cm",
+    price: 59800,
+    available: true,
+    photo: "croche",
+  },
+  {
+    id: "canasta-metalica",
+    name: "Canasta metálica",
+    material: "Metal",
+    dimensions: "28 x 22 x 12.5 cm",
+    price: 35600,
+    available: true,
+    photo: "metalica",
+  },
+  
+  {
+    id: "caja-redonda-rosada",
+    name: "Caja redonda rosada",
+    material: "Cartón",
+    dimensions: "8 x 24 cm",
+    price: 54200,
+    available: false,
+    photo: "redondarosa",
+  },
+  {
+    id: "bolsa-vinilo-margaritas",
+    name: "Bolsa vinilo margaritas",
+    material: "Vinilo",
+    dimensions: "27 x 27 x 8 cm",
+    price: 27800,
+    available: true,
+    photo: "vinilomargaritas",
+  },
+  {
+    id: "bolsa-yute",
+    name: "Bolsa de yute",
+    material: "Yute",
+    dimensions: "24 x 12 cm",
+    price: 36900,
+    available: true,
+    photo: "yute",
+  },
+  {
+    id: "bolso-mimbre",
+    name: "Bolso de mimbre",
+    material: "Mimbre",
+    dimensions: "15 x 20.5 x 10.5 cm",
+    price: 42600,
+    available: true,
+    photo: "mimbre",
+  },
+];
+
+export function getPackagingById(id) {
+  return PACKAGING.find((p) => p.id === id);
+}
