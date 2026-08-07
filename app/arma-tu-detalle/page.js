@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import CartDrawer from "../components/CartDrawer";
@@ -151,7 +151,7 @@ function FaqItem({ q, a }) {
     </div>
   );
 }
-export default function ArmaTuDetallePage() {
+function ArmaTuDetalleContent() {
   const searchParams = useSearchParams();
   const categoriaFromUrl = searchParams.get("categoria");
   const initialTab = TABS.includes(categoriaFromUrl) ? categoriaFromUrl : TABS[0];
@@ -395,5 +395,13 @@ export default function ArmaTuDetallePage() {
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
+  );
+}
+
+export default function ArmaTuDetallePage() {
+  return (
+    <Suspense fallback={null}>
+      <ArmaTuDetalleContent />
+    </Suspense>
   );
 }

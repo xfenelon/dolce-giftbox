@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import {
   ShoppingBag, Menu, X, Search, User, ChevronLeft, ChevronRight,
@@ -77,7 +77,7 @@ function FaqItem({ q, a }) {
   );
 }
 
-export default function ProductosPage() {
+function ProductosPageContent() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -402,8 +402,16 @@ const [category, setCategory] = useState(searchParams.get("categoria") || "Todos
       <a className="whatsapp-fab" href="https://wa.me/573113290390" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
         <MessageCircle size={26} />
       </a>
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+    <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
    <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
+  );
+}
+
+export default function ProductosPage() {
+  return (
+    <Suspense fallback={null}>
+      <ProductosPageContent />
+    </Suspense>
   );
 }
