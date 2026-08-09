@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 
 const CartContext = createContext(null);
 const STORAGE_KEY = "dolce-cart";
@@ -8,6 +8,8 @@ const STORAGE_KEY = "dolce-cart";
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
 
   // Carga el carrito guardado en el navegador al abrir el sitio
   useEffect(() => {
@@ -45,6 +47,11 @@ export function CartProvider({ children }) {
       }
       return [...prev, product];
     });
+
+    // Muestra la notificación flotante ("toast") por 2.5 segundos
+    setToast(product.name);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2500);
   };
 
   const removeItem = (slug, ribbon) => {
@@ -77,6 +84,7 @@ export function CartProvider({ children }) {
         totalPrice,
         cartOpen,
         setCartOpen,
+        toast,
       }}
     >
       {children}

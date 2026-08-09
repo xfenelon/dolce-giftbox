@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { CATEGORIES } from "../data/products";
 import CartDrawer from "../components/CartDrawer";
+import CartToast from "../components/CartToast";
 import { useCart } from "../context/CartContext";
 import SearchOverlay from "../components/SearchOverlay";
 import {
@@ -126,6 +127,15 @@ const { totalCount } = useCart();
           background: none; cursor:pointer; transition: transform .25s; text-decoration:none; }
         .whatsapp-fab img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .whatsapp-fab:hover { transform: scale(1.08); }
+.cart-toast { position: fixed; top: 90px; right: 24px; z-index: 90; background: var(--white); border: 1px solid var(--tan);
+          border-radius: 14px; box-shadow: 0 12px 30px rgba(74,58,44,0.18); padding: 14px 16px; display:flex; align-items:center; gap: 12px;
+          max-width: 280px; animation: toastIn .3s ease; }
+        .cart-toast-icon { width: 28px; height: 28px; border-radius: 50%; background: #DCEFE2; color: #2E7D4F; display:flex;
+          align-items:center; justify-content:center; flex-shrink:0; }
+        .cart-toast-text { display:flex; flex-direction:column; font-size: 12.5px; color: var(--olive); }
+        .cart-toast-text strong { color: var(--ink); font-weight: 400; font-family:'Marcellus'; font-size: 13.5px; }
+        .cart-toast-btn { background: none; border: none; color: var(--olive); text-decoration: underline; font-size: 12px; cursor:pointer; white-space:nowrap; }
+        @keyframes toastIn { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
 
         @media (max-width: 900px) {
           .nav-links { display:none; } .menu-toggle { display:block; }
@@ -221,6 +231,7 @@ const { totalCount } = useCart();
         <img src="/whatsapp-boton.png" alt="Escríbenos por WhatsApp" />
       </a>
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartToast onViewCart={() => setCartOpen(true)} />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
