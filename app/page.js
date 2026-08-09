@@ -22,6 +22,32 @@ import {
 const FONT_IMPORT =
   "@import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');";
 
+function ExperiencePhoto() {
+  const [error, setError] = useState(false);
+  if (error) return null;
+  return (
+    <img
+      src="/experiencia.png"
+      alt="Ilustración Dolce Giftbox"
+      className="experience-photo-img"
+      onError={() => setError(true)}
+    />
+  );
+}
+
+function StepBadge({ icon, label, number }) {
+  const [error, setError] = useState(false);
+  if (error) {
+    return (
+      <>
+        <div className="step-circle">{number}</div>
+        <p>{label}</p>
+      </>
+    );
+  }
+  return <img src={`/como-comprar/${icon}.png`} alt={label} className="step-badge" onError={() => setError(true)} />;
+}
+
 function ImageBox({ ratio = "1 / 1", label = "Imagen pendiente", className = "" }) {
   return (
     <div className={`img-placeholder ${className}`} style={{ aspectRatio: ratio }}>
@@ -105,11 +131,11 @@ const PRODUCTS = [
 ];
 
 const STEPS = [
-  "Añade el detalle al carrito",
-  "Completa los datos",
-  "Realiza el pago",
-  "Recibe la confirmación",
-  "Recibe el detalle",
+  { text: "Añade el detalle al carrito", icon: "anade-carrito" },
+  { text: "Completa los datos", icon: "completa-datos" },
+  { text: "Realiza el pago", icon: "realiza-pago" },
+  { text: "Recibe la confirmación", icon: "recibe-confirmacion" },
+  { text: "Recibe el detalle", icon: "recibe-detalle" },
 ];
 
 const CATEGORIES = [
@@ -153,6 +179,12 @@ const featured = getProductBySlug("bianca");
   const [heroIndex, setHeroIndex] = useState(1);
   const nextHero = () => setHeroIndex((i) => (i % 3) + 1);
   const prevHero = () => setHeroIndex((i) => ((i + 1) % 3) + 1);
+useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((i) => (i % 3) + 1);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -194,7 +226,7 @@ const featured = getProductBySlug("bianca");
         .brand-sub { font-size: 9px; letter-spacing: 4px; color: var(--taupe); margin-top:2px; }
         .brand-logo-img { height: 56px; width: auto; display: block; }
         .nav-links { display:flex; gap: 36px; list-style:none; margin:0; padding:0; }
-        .nav-links li { font-size: 14px; letter-spacing: 0.5px; cursor:pointer; position:relative; padding-bottom:4px; color: var(--olive); }
+        .nav-links li { font-size: 13px; cursor:pointer; position:relative; padding-bottom:4px; color: var(--olive); text-transform: uppercase; letter-spacing: 0.5px; }
         .nav-links a, .footer-nav a { color: inherit; text-decoration: none; }
         .nav-links li::after { content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:var(--olive); transition:width .3s; }
         .nav-links li:hover::after { width:100%; }
@@ -218,8 +250,10 @@ const featured = getProductBySlug("bianca");
         .product-photo { width:100%; border-radius: 12px; object-fit: cover; display:block; }
         .hero { position:relative; padding: 46px 6vw 30px; max-width: 1400px; margin: 0 auto; }
         .hero-frame { position: relative; border-radius: 24px; overflow: hidden; }
-        .hero-frame .img-placeholder { aspect-ratio: 16/8; border-radius: 24px; }
-        .hero-frame .hero-photo { width:100%; aspect-ratio: 16 / 8; object-fit: cover; display:block; border-radius: 24px; animation: heroFade .5s ease; }
+        .hero-track { display: flex; transition: transform .6s cubic-bezier(0.65, 0, 0.35, 1); }
+        .hero-slide { flex: 0 0 100%; min-width: 0; }
+        .hero-frame .img-placeholder { aspect-ratio: 16/8; border-radius: 0; }
+        .hero-frame .hero-photo { width:100%; aspect-ratio: 16 / 8; object-fit: cover; display:block; }
         .pd-main .featured-photo { width: 100%; aspect-ratio: 4 / 3.6; object-fit: cover; border-radius: 16px; display: block; }
         @keyframes heroFade { from { opacity: 0; } to { opacity: 1; } }
         .hero-quote {
@@ -261,10 +295,14 @@ const featured = getProductBySlug("bianca");
         .step-item { flex:1; min-width: 130px; text-align:center; }
         .step-circle { width:96px; height:96px; border-radius:50%; background:var(--cream); border:1px solid var(--tan);
           display:flex; align-items:center; justify-content:center; margin: 0 auto 16px; color: var(--olive); font-family:'Marcellus'; font-size:26px; }
+        .step-badge { width: 180px; max-width: 100%; height: auto; display:block; margin: 0 auto; }
         .step-item p { font-size: 14px; color: var(--olive); line-height:1.4; margin:0; }
         .step-arrow { align-self: center; color: var(--tan); margin-top: 40px; }
 
-        .experience { text-align:center; }
+        .experience { display:flex; align-items:center; gap: 48px; flex-wrap: wrap; text-align:left; }
+        .experience-text { flex: 1; min-width: 280px; }
+        .experience-photo { flex: 1; min-width: 240px; max-width: 380px; margin: 0 auto; }
+        .experience-photo-img { width: 100%; height: auto; display:block; }
         .experience .eyebrow { color: var(--olive); }
         .experience h2 { font-family:'Marcellus'; font-size: clamp(24px,3.2vw,32px); color: var(--olive);
           max-width: 720px; margin: 0 auto; line-height: 1.4; font-weight:400; }
@@ -298,6 +336,7 @@ const featured = getProductBySlug("bianca");
         .pd-installments { font-size: 13px; color: var(--taupe); margin-bottom: 22px; }
         .pd-label { font-size: 13.5px; margin-bottom: 10px; color: var(--olive); }
         .ribbon-options { display:flex; gap: 10px; margin-bottom: 24px; }
+.ribbon-reference { width: 180px; max-width: 100%; border-radius: 10px; display: block; margin: -4px 0 20px; }        
         .ribbon-chip { border: 1px solid var(--taupe); background: none; padding: 8px 18px; border-radius: 8px;
           font-family:'Marcellus'; font-size: 13px; cursor:pointer; color: var(--olive); transition: all .2s; }
         .ribbon-chip.active { border-color: var(--olive); background: var(--cream); color: var(--olive); }
@@ -336,6 +375,7 @@ const featured = getProductBySlug("bianca");
           .nav-links { display:none; } .menu-toggle { display:block; }
           .product-grid { grid-template-columns: repeat(2, 1fr); }
           .categories-grid { grid-template-columns: 1fr; }
+          .experience { flex-direction: column-reverse; text-align:center; }
           .hero-quote { position: static; max-width: 100%; margin-bottom: 14px; }
           .hero-cta { position: static; max-width: 100%; }
           .hero-frame { display:flex; flex-direction: column-reverse; }
@@ -356,13 +396,15 @@ const featured = getProductBySlug("bianca");
           <div className="brand">
             <img src="/logoprincipal.png" alt="Dolce Giftbox" className="brand-logo-img" />
           </div>
-         <ul className="nav-links">
+        <ul className="nav-links">
   <li><Link href="/">Inicio</Link></li>
   <li><Link href="/productos">Detalles prediseñados</Link></li>
   <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
   <li><Link href="/contacto">Contacto</Link></li>
   <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
-</ul>
+  <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
+          
+        </ul>
         </div>
         <div className="nav-icons">
           <button className="icon-btn" aria-label="Buscar" onClick={() => setSearchOpen(true)}><Search size={19} /></button>
@@ -384,13 +426,20 @@ const featured = getProductBySlug("bianca");
       <li onClick={() => setMenuOpen(false)}><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
       <li onClick={() => setMenuOpen(false)}><Link href="/contacto">Contacto</Link></li>
       <li onClick={() => setMenuOpen(false)}><Link href="/quienes-somos">Quiénes Somos</Link></li>
+    <li onClick={() => setMenuOpen(false)}><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
     </ul>
   </div>
 )}
 
   <section className="hero">
   <Link href="/productos" className="hero-frame" style={{ display: "block" }}>
-    <HeroPhoto key={heroIndex} index={heroIndex} alt="Dolce Giftbox" label={`Foto hero ${heroIndex}`} />
+    <div className="hero-track" style={{ transform: `translateX(-${(heroIndex - 1) * 100}%)` }}>
+      {[1, 2, 3].map((i) => (
+        <div className="hero-slide" key={i}>
+          <HeroPhoto index={i} alt="Dolce Giftbox" label={`Foto hero ${i}`} />
+        </div>
+      ))}
+    </div>
   </Link>
   <div className="carousel-nav">
     <button aria-label="Anterior" onClick={prevHero}><ChevronLeft size={18} /></button>
@@ -405,11 +454,10 @@ const featured = getProductBySlug("bianca");
       <section className="section">
         <Reveal><h2 className="section-title display" style={{ textAlign: "center" }}>¿Cómo comprar?</h2></Reveal>
         <div className="steps-row">
-          {STEPS.map((s, i) => (
-            <React.Fragment key={s}>
+         {STEPS.map((s, i) => (
+            <React.Fragment key={s.text}>
               <Reveal delay={i * 70} className="step-item">
-                <div className="step-circle">{i + 1}</div>
-                <p>{s}</p>
+                <StepBadge icon={s.icon} label={s.text} number={i + 1} />
               </Reveal>
               {i < STEPS.length - 1 && <span className="step-arrow">→</span>}
             </React.Fragment>
@@ -417,10 +465,15 @@ const featured = getProductBySlug("bianca");
         </div>
       </section>
 
-      <Reveal>
+     <Reveal>
         <section className="section experience">
-          <p className="eyebrow">Más que un regalo, somos toda una experiencia</p>
-          <h2>Cuando de dar detalles con significado se trate, no pienses en regalos, piensa en Dolce Gift Box</h2>
+          <div className="experience-text">
+            <p className="eyebrow">Más que un regalo, somos toda una experiencia</p>
+            <h2>Cuando de dar detalles con significado se trate, no pienses en regalos, piensa en Dolce Gift Box</h2>
+          </div>
+          <div className="experience-photo">
+            <ExperiencePhoto />
+          </div>
         </section>
       </Reveal>
 
@@ -469,6 +522,7 @@ const featured = getProductBySlug("bianca");
           <button key={c} className={`ribbon-chip ${ribbon === c ? "active" : ""}`} onClick={() => setRibbon(c)}>{c}</button>
         ))}
       </div>
+      <img src="/liston-referencia.jpg" alt="Colores de listón disponibles: café, blanco y palo rosa" className="ribbon-reference" />
       <div className="qty-row">
         <div className="qty-control">
           <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Menos"><Minus size={14} /></button>
@@ -505,7 +559,12 @@ const featured = getProductBySlug("bianca");
       <footer className="footer">
         <div className="footer-icon"><AtSign size={20} /></div>
         <ul className="footer-nav">
-          <li>Inicio</li><li>Detalles prediseñados</li><li>Contacto</li><li>Quiénes Somos</li>
+          <li><Link href="/">Inicio</Link></li>
+          <li><Link href="/productos">Detalles prediseñados</Link></li>
+          <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
+          <li><Link href="/contacto">Contacto</Link></li>
+          <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
+          <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
         </ul>
         <div className="footer-contact">
           <p>+57 311 329 0390 (WhatsApp)</p>

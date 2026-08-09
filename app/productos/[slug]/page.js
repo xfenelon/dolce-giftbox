@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { CATEGORIES } from "../../data/products";
 import CartDrawer from "../../components/CartDrawer";
 import { useCart } from "../../context/CartContext";
 import {
@@ -98,6 +99,15 @@ export default function ProductDetailPage({ params }) {
         .nav-links li::after { content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:var(--olive); transition:width .3s; }
         .nav-links li:hover::after { width:100%; }
         .nav-links a, .footer-nav a { color: inherit; text-decoration: none; }
+        .nav-dropdown { position: relative; }
+        .dropdown-menu { position: absolute; top: 100%; left: 0; background: var(--white); border: 1px solid var(--tan);
+          border-radius: 10px; box-shadow: 0 12px 30px rgba(74,58,44,0.12); padding: 10px 0; min-width: 220px;
+          display: flex; flex-direction: column; opacity: 0; visibility: hidden; transform: translateY(6px);
+          transition: opacity .2s, transform .2s, visibility .2s; z-index: 50; }
+        .nav-dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu a { padding: 9px 20px; font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--olive); text-decoration:none; white-space: nowrap; }
+        .dropdown-menu a:hover { background: var(--cream); }
+        .dropdown-all { border-top: 1px solid var(--tan); margin-top: 6px; padding-top: 12px !important; }
         .nav-icons { display:flex; align-items:center; gap: 18px; }
         .icon-btn { background:none; border:none; cursor:pointer; color:var(--olive); position:relative; }
         .cart-badge { position:absolute; top:-8px; right:-9px; background:var(--olive); color:var(--white); font-size:10px;
@@ -138,6 +148,9 @@ export default function ProductDetailPage({ params }) {
         .ribbon-chip { border: 1px solid var(--taupe); background: none; padding: 8px 18px; border-radius: 8px;
           font-family:'Marcellus'; font-size: 13px; cursor:pointer; color: var(--ink); transition: all .2s; }
         .ribbon-chip.active { border-color: var(--olive); background: var(--cream); color: var(--olive); }
+        .ribbon-specs-row { display:flex; gap: 20px; align-items:flex-start; margin-bottom: 22px; flex-wrap: wrap; }
+        .ribbon-reference { width: 150px; max-width: 100%; border-radius: 10px; display: block; flex-shrink: 0; }
+        .ribbon-specs-row .pd-bullets { flex: 1; min-width: 160px; margin: 0; }
         .qty-row { display:flex; align-items:center; gap: 18px; margin-bottom: 26px; }
         .qty-control { display:flex; align-items:center; border:1px solid var(--tan); border-radius: 999px; overflow:hidden; }
         .qty-control button { background:none; border:none; padding: 10px 14px; cursor:pointer; color: var(--olive); }
@@ -193,7 +206,15 @@ export default function ProductDetailPage({ params }) {
           </div>
           <ul className="nav-links">
             <li><Link href="/">Inicio</Link></li>
-            <Link href="/productos">Detalles prediseñados</Link>
+            <li className="nav-dropdown">
+              <Link href="/productos">Detalles prediseñados</Link>
+              <div className="dropdown-menu">
+                {CATEGORIES.map((cat) => (
+                  <Link key={cat} href={`/productos?categoria=${encodeURIComponent(cat)}`}>{cat}</Link>
+                ))}
+                <Link href="/productos" className="dropdown-all">Todos</Link>
+              </div>
+            </li>
             <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
             <li><Link href="/contacto">Contacto</Link></li>
             <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
@@ -236,7 +257,9 @@ export default function ProductDetailPage({ params }) {
             <a href="#" aria-label="Compartir"><Share2 size={16} /></a>
           </div>
         </div>
-        <div className="pd-info">
+        
+     
+<div className="pd-info">
           <h1>{product.name}</h1>
           <p className="pd-price">{product.priceLabel}</p>
           <p className="pd-installments">{product.installmentLabel}</p>
@@ -245,6 +268,14 @@ export default function ProductDetailPage({ params }) {
             {["Blanco", "Café", "Rosa Palo"].map((c) => (
               <button key={c} className={`ribbon-chip ${ribbon === c ? "active" : ""}`} onClick={() => setRibbon(c)}>{c}</button>
             ))}
+          </div>
+          <div className="ribbon-specs-row">
+            <img src="/liston-referencia.jpg" alt="Colores de listón disponibles: café, blanco y palo rosa" className="ribbon-reference" />
+            <ul className="pd-bullets">
+              {product.bullets.map((b, i) => (
+                <li key={i}>• {b}</li>
+              ))}
+            </ul>
           </div>
           <div className="qty-row">
             <div className="qty-control">
@@ -267,13 +298,9 @@ export default function ProductDetailPage({ params }) {
           >
             <MessageCircle size={16} /> ¿La quieres personalizada? Escríbenos
           </a>
-
-          <ul className="pd-bullets">
-            {product.bullets.map((b, i) => (
-              <li key={i}>• {b}</li>
-            ))}
-          </ul>
         </div>
+        
+       
       </section>
 
       <section className="related">
@@ -297,6 +324,9 @@ export default function ProductDetailPage({ params }) {
          <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
           <li><Link href="/contacto">Contacto</Link></li>
           <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
+        <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
+          <li><Link href="/terminos-y-condiciones">Términos y Condiciones</Link></li>
+          <li><Link href="/politica-de-privacidad">Política de Privacidad</Link></li>
         </ul>
         <div className="footer-contact">
           <p>+57 311 329 0390 (WhatsApp)</p>

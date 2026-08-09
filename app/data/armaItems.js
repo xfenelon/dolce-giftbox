@@ -47,7 +47,6 @@ const RAW_ITEMS = [
   { name: "Termo de Vidrio", slug: "termo-vidrio", category: "Hogar y ambiente", price: 27800, available: true, description: "Termo de vidrio con tapa de bambú y pitillo en vidrio." },
   { name: "Bouquet Natural Mixto", slug: "bouquet-mixto", category: "Hogar y ambiente", price: 142900, available: true, description: "Ramo compuesto por hortensias, rosas de exportación y eucalipto." },
   { name: "Bouquet Natural 17 Rosas", slug: "bouquet-17-rosas", category: "Hogar y ambiente", price: 95400, available: true, description: "Ramo de 17 rosas de exportación y eucalipto." },
-  
   { name: "Bouquet Flores Secas", slug: "bouquet-flores-secas", category: "Hogar y ambiente", price: 37500, available: true, description: "Bouquet de flores secas con mini rosas, aprox. 22cm." },
   { name: "Tarjeta con Mini Bouquet", slug: "tarjeta-mini-bouquet", category: "Hogar y ambiente", price: 31900, available: true, description: "Bouquet de flores secas con mini rosas y tarjeta, aprox. 10cm." },
   { name: "Placa Aromática", slug: "placa-aromatica", category: "Hogar y ambiente", price: 19800, available: true, description: "Placa móvil aromática colgante para espacios, 8 x 8 cm." },
