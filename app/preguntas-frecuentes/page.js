@@ -183,9 +183,10 @@ export default function PreguntasFrecuentesPage() {
             </li>
             <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
             <li><Link href="/contacto">Contacto</Link></li>
-            <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
-           <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
-          
+           <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
+          <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
+          <li><Link href="/terminos-y-condiciones">Términos y Condiciones</Link></li>
+          <li><Link href="/politica-de-privacidad">Política de Privacidad</Link></li>
         </ul>
         </div>
         <div className="nav-icons">
