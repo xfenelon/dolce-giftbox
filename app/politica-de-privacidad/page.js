@@ -210,9 +210,10 @@ export default function PoliticaDePrivacidadPage() {
         .footer-contact p { font-size: 14px; opacity: .9; margin: 6px 0; color: var(--olive); }
         .footer-bottom { border-top: 1px solid rgba(146,122,93,0.25); padding-top: 18px; font-size: 12px; opacity: .7; margin-top: 20px; color: var(--olive); }
 
-        .whatsapp-fab { position: fixed; bottom: 24px; right: 24px; z-index: 50; width: 54px; height: 54px; border-radius: 50%;
-          background: #25D366; color: #fff; display:flex; align-items:center; justify-content:center; border:none;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.25); cursor:pointer; transition: transform .25s; text-decoration:none; }
+        .whatsapp-fab { position: fixed; bottom: 24px; right: 24px; z-index: 50; width: 90px; height: 90px; border-radius: 11px;
+          overflow: hidden; display:flex; align-items:center; justify-content:center; border:none;
+          background: none; cursor:pointer; transition: transform .25s; text-decoration:none; }
+        .whatsapp-fab img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .whatsapp-fab:hover { transform: scale(1.08); }
 
         @media (max-width: 900px) {
@@ -241,10 +242,8 @@ export default function PoliticaDePrivacidadPage() {
             <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
             <li><Link href="/contacto">Contacto</Link></li>
             <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
-           <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
-          <li><Link href="/terminos-y-condiciones">Términos y Condiciones</Link></li>
-          <li><Link href="/politica-de-privacidad">Política de Privacidad</Link></li>
-        </ul>
+            <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
+          </ul>
         </div>
         <div className="nav-icons">
           <button className="icon-btn" aria-label="Buscar" onClick={() => setSearchOpen(true)}><Search size={19} /></button>
@@ -260,6 +259,7 @@ export default function PoliticaDePrivacidadPage() {
       {menuOpen && (
         <div className="mobile-menu">
           <button className="mobile-close" onClick={() => setMenuOpen(false)}><X size={26} /></button>
+          <img src="/logoprincipal.png" alt="Dolce Giftbox" className="mobile-menu-logo" />
           <ul>
             <li onClick={() => setMenuOpen(false)}><Link href="/">Inicio</Link></li>
             <li onClick={() => setMenuOpen(false)}><Link href="/productos">Detalles prediseñados</Link></li>
@@ -267,6 +267,8 @@ export default function PoliticaDePrivacidadPage() {
             <li onClick={() => setMenuOpen(false)}><Link href="/contacto">Contacto</Link></li>
             <li onClick={() => setMenuOpen(false)}><Link href="/quienes-somos">Quiénes Somos</Link></li>
             <li onClick={() => setMenuOpen(false)}><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
+            <li onClick={() => setMenuOpen(false)}><Link href="/terminos-y-condiciones">Términos y Condiciones</Link></li>
+            <li onClick={() => setMenuOpen(false)}><Link href="/politica-de-privacidad">Política de Privacidad</Link></li>
           </ul>
         </div>
       )}
@@ -301,6 +303,8 @@ export default function PoliticaDePrivacidadPage() {
           <li><Link href="/contacto">Contacto</Link></li>
           <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
           <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
+          <li><Link href="/terminos-y-condiciones">Términos y Condiciones</Link></li>
+          <li><Link href="/politica-de-privacidad">Política de Privacidad</Link></li>
         </ul>
         <div className="footer-contact">
           <p>+57 311 329 0390 (WhatsApp)</p>
@@ -310,8 +314,8 @@ export default function PoliticaDePrivacidadPage() {
         <div className="footer-bottom">Copyright Dolce Gift Box — 2026. Todos los derechos reservados.</div>
       </footer>
 
-      <a className="whatsapp-fab" href="https://wa.me/573113290390" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
-        <MessageCircle size={26} />
+     <a className="whatsapp-fab" href="https://wa.me/573113290390" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
+        <img src="/whatsapp-boton.png" alt="Escríbenos por WhatsApp" />
       </a>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
