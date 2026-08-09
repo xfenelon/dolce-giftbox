@@ -87,8 +87,12 @@ const { totalCount } = useCart();
           width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
         .menu-toggle { display:none; background:none; border:none; cursor:pointer; color:var(--olive); }
         .mobile-menu { position:fixed; inset:0; background:var(--white); z-index:60; display:flex; flex-direction:column;
-          align-items:center; justify-content:center; gap:28px; }
-        .mobile-menu li { list-style:none; font-family:'Marcellus'; font-size:26px; color:var(--olive); }
+          align-items:center; justify-content:center; padding: 40px 8vw; }
+        .mobile-menu-logo { height: 44px; width: auto; display:block; margin-bottom: 36px; }
+        .mobile-menu ul { list-style:none; margin:0; padding:0; width: 100%; max-width: 320px; }
+        .mobile-menu li { font-family:'Marcellus'; font-size: 17px; color:var(--olive); text-align:center;
+          padding: 17px 0; border-bottom: 1px solid var(--cream); text-transform: uppercase; letter-spacing: 0.5px; }
+        .mobile-menu li:last-child { border-bottom: none; }
         .mobile-menu a { color: inherit; text-decoration: none; }
         .mobile-close { position:absolute; top:24px; right:6vw; background:none; border:none; cursor:pointer; color:var(--olive); }
 
