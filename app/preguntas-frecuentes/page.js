@@ -75,7 +75,8 @@ function FaqItem({ q, a }) {
 }
 
 export default function PreguntasFrecuentesPage() {
- const [dudasOpen, setDudasOpen] = useState(false);
+ const [menuOpen, setMenuOpen] = useState(false);
+  const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);

@@ -39,7 +39,8 @@ function StoryPhoto({ index, alt, label, className = "" }) {
 }
 
 export default function QuienesSomosPage() {
- const [dudasOpen, setDudasOpen] = useState(false);
+ const [menuOpen, setMenuOpen] = useState(false);
+  const [dudasOpen, setDudasOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 const { totalCount } = useCart();
   const [searchOpen, setSearchOpen] = useState(false);

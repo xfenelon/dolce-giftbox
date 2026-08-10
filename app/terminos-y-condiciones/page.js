@@ -154,6 +154,7 @@ function LegalBlocks({ blocks }) {
 }
 
 export default function TerminosYCondicionesPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);

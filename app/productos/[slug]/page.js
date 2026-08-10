@@ -61,6 +61,7 @@ export default function ProductDetailPage({ params }) {
   const product = getProductBySlug(slug);
   const related = getRelatedProducts(slug, 4);
 
+  const [menuOpen, setMenuOpen] = useState(false);
   const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [ribbon, setRibbon] = useState("Blanco");

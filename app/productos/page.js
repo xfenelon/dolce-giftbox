@@ -79,7 +79,8 @@ function FaqItem({ q, a }) {
 }
 
 function ProductosPageContent() {
-  const [menuOpen, setMenuOpen] = useState(false);
+ const [menuOpen, setMenuOpen] = useState(false);
+  const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
