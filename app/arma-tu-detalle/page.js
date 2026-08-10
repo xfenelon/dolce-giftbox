@@ -157,7 +157,7 @@ function ArmaTuDetalleContent() {
   const searchParams = useSearchParams();
   const categoriaFromUrl = searchParams.get("categoria");
   const initialTab = TABS.includes(categoriaFromUrl) ? categoriaFromUrl : TABS[0];
-
+const [menuOpen, setMenuOpen] = useState(false);
   const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
