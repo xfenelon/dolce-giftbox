@@ -8,7 +8,7 @@ import SearchOverlay from "../components/SearchOverlay";
 import { useCart } from "../context/CartContext";
 import { CATEGORIES } from "../data/products";
 import {
-  ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign,
+  ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign, ChevronDown,
 } from "lucide-react";
 
 const FONT_IMPORT =
@@ -154,7 +154,7 @@ function LegalBlocks({ blocks }) {
 }
 
 export default function TerminosYCondicionesPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -219,7 +219,10 @@ export default function TerminosYCondicionesPage() {
         .mobile-menu ul { list-style:none; margin:0; padding:0; width: 100%; max-width: 320px; }
         .mobile-menu li { font-family:'Marcellus'; font-size: 17px; color:var(--olive); text-align:center;
           padding: 17px 0; border-bottom: 1px solid var(--cream); text-transform: uppercase; letter-spacing: 0.5px; }
-        .mobile-menu li:last-child { border-bottom: none; }
+        .mobile-dudas { display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; }
+        .mobile-dudas-icon { transition: transform .25s; }
+        .mobile-dudas-icon.open { transform: rotate(180deg); }
+        .mobile-sublink { font-size: 14px !important; opacity: .75; }
         .mobile-menu a { color: inherit; text-decoration: none; }
         .mobile-close { position:absolute; top:24px; right:6vw; background:none; border:none; cursor:pointer; color:var(--olive); }
 
@@ -313,11 +316,18 @@ export default function TerminosYCondicionesPage() {
             <li onClick={() => setMenuOpen(false)}><Link href="/">Inicio</Link></li>
             <li onClick={() => setMenuOpen(false)}><Link href="/productos">Detalles prediseñados</Link></li>
             <li onClick={() => setMenuOpen(false)}><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
-            <li onClick={() => setMenuOpen(false)}><Link href="/contacto">Contacto</Link></li>
             <li onClick={() => setMenuOpen(false)}><Link href="/quienes-somos">Quiénes Somos</Link></li>
-            <li onClick={() => setMenuOpen(false)}><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
-            <li onClick={() => setMenuOpen(false)}><Link href="/terminos-y-condiciones">Términos y Condiciones</Link></li>
-            <li onClick={() => setMenuOpen(false)}><Link href="/politica-de-privacidad">Política de Privacidad</Link></li>
+            <li className="mobile-dudas" onClick={() => setDudasOpen(!dudasOpen)}>
+              <span>Dudas</span>
+              <ChevronDown size={16} className={`mobile-dudas-icon ${dudasOpen ? "open" : ""}`} />
+            </li>
+            {dudasOpen && (
+              <>
+                <li className="mobile-sublink" onClick={() => setMenuOpen(false)}><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
+                <li className="mobile-sublink" onClick={() => setMenuOpen(false)}><Link href="/terminos-y-condiciones">Términos y Condiciones</Link></li>
+                <li className="mobile-sublink" onClick={() => setMenuOpen(false)}><Link href="/politica-de-privacidad">Política de Privacidad</Link></li>
+              </>
+            )}
           </ul>
         </div>
       )}
