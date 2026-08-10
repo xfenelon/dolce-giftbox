@@ -63,6 +63,71 @@ const HERO_SLIDES = [
   { index: 4, href: "/productos?categoria=Para%20hombre" },
   { index: 5, href: "/productos" },
 ];
+
+const FEATURED_BOXES = [
+  { slug: "bianca", name: "Bianca" },
+  { slug: "moonlight", name: "Moonlight" },
+  { slug: "luna", name: "Luna" },
+  { slug: "florecer", name: "Florecer" },
+];
+
+function FeaturedBoxPhoto({ slug, alt }) {
+  const [error, setError] = useState(false);
+  if (error) {
+    return <ImageBox ratio="4 / 5" label={alt} />;
+  }
+  return (
+    <img
+      src={`/productos/${slug}-1.jpg`}
+      alt={alt}
+      className="featured-box-photo"
+      onError={() => setError(true)}
+    />
+  );
+}
+
+function FeaturedBoxesCarousel() {
+  const count = FEATURED_BOXES.length;
+  const positions = count - 1;
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((i) => (i + 1) % positions);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, [positions]);
+
+  return (
+    <section className="section featured-carousel-section">
+      <Reveal><h2 className="section-title display" style={{ textAlign: "center" }}>Algunos de nuestros detalles</h2></Reveal>
+      <Reveal delay={80}>
+        <div className="featured-carousel-frame">
+          <div
+            className="featured-carousel-track"
+            style={{ transform: `translateX(-${index * (100 / count)}%)` }}
+          >
+            {FEATURED_BOXES.map((box) => (
+              <Link href={`/productos/${box.slug}`} className="featured-carousel-slide" key={box.slug}>
+                <FeaturedBoxPhoto slug={box.slug} alt={box.name} />
+                <p className="featured-carousel-name">{box.name}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+        <div className="featured-carousel-dots">
+          {Array.from({ length: positions }).map((_, i) => (
+            <span
+              key={i}
+              className={`featured-carousel-dot ${i === index ? "active" : ""}`}
+              onClick={() => setIndex(i)}
+            />
+          ))}
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
 function HeroPhoto({ index, alt, label }) {
   const [error, setError] = useState(false);
   if (error) {
@@ -332,6 +397,16 @@ useEffect(() => {
         .experience h2 { font-family:'Marcellus'; font-size: clamp(24px,3.2vw,32px); color: var(--olive);
           max-width: 720px; margin: 0 auto; line-height: 1.4; font-weight:400; }
 
+        .featured-carousel-section { text-align: center; }
+        .featured-carousel-frame { max-width: 720px; margin: 0 auto; overflow: hidden; border-radius: 18px; }
+        .featured-carousel-track { display: flex; width: 200%; transition: transform .7s cubic-bezier(0.65, 0, 0.35, 1); }
+        .featured-carousel-slide { width: 25%; flex-shrink: 0; padding: 0 8px; text-decoration: none; color: inherit; display: block; }
+        .featured-box-photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; border-radius: 14px; box-shadow: 0 10px 26px rgba(74,58,44,0.15); }
+        .featured-carousel-name { margin-top: 12px; font-family: 'Marcellus', serif; font-size: 16px; color: var(--olive); }
+        .featured-carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 18px; }
+        .featured-carousel-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--tan); cursor: pointer; transition: background .2s; border: none; padding: 0; }
+        .featured-carousel-dot.active { background: var(--olive); }
+
         .categories-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
         .category-card { text-align:center; }
         .category-card .img-placeholder { aspect-ratio: 4/3; margin-bottom: 16px; }
@@ -353,7 +428,9 @@ useEffect(() => {
         .product-detail { display:flex; gap: 46px; align-items:flex-start; flex-wrap: wrap; }
         .pd-gallery { display:flex; gap: 12px; width: 100px; flex-direction: column; }
         .pd-gallery .img-placeholder { aspect-ratio: 1/1; }
-        .pd-main { flex: 1; min-width: 260px; }
+        .pd-main { flex: 1; min-width: 260px; position: relative; }
+        .packaging-badge { position: absolute; bottom: 6px; right: 6px; width: 40px; height: 40px; border-radius: 8px;
+          object-fit: cover; border: 2px solid var(--white); box-shadow: 0 2px 6px rgba(74,58,44,0.25); z-index: 2; }
         .pd-main .img-placeholder { aspect-ratio: 4/3.6; }
         .pd-info { flex: 1; min-width: 280px; }
         .pd-info h3 { font-family:'Marcellus'; font-size: 28px; color: var(--olive); margin: 0 0 8px; font-weight:400; }
@@ -495,7 +572,7 @@ useEffect(() => {
 </section>
 
      
-    
+    <FeaturedBoxesCarousel />
 
       <section className="section">
         <Reveal><h2 className="section-title display" style={{ textAlign: "center" }}>¿Cómo comprar?</h2></Reveal>
@@ -557,7 +634,12 @@ useEffect(() => {
       </section>
 <Reveal>
   <section className="section product-detail">
-    <div className="pd-main"><FeaturedPhoto slug={featured.slug} alt={featured.name} label={featured.name} /></div>
+    <div className="pd-main">
+      <FeaturedPhoto slug={featured.slug} alt={featured.name} label={featured.name} />
+      {featured.packaging && (
+        <img src={`/empaques/${featured.packaging.photo}.jpg`} alt={featured.packaging.name} className="packaging-badge" />
+      )}
+    </div>
     <div className="pd-info">
       <h3>{featured.name}</h3>
       <p className="pd-price">{featured.priceLabel}</p>

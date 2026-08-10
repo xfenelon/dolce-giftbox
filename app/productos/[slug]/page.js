@@ -79,6 +79,8 @@ export default function ProductDetailPage({ params }) {
   const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [ribbon, setRibbon] = useState("Blanco");
+  const [variant, setVariant] = useState(product?.variants ? product.variants[0] : null);
+  const [customName, setCustomName] = useState("");
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
@@ -106,6 +108,8 @@ export default function ProductDetailPage({ params }) {
       priceLabel: product.priceLabel,
       price: product.price,
       ribbon,
+      variant: variant || null,
+      customName: customName.trim() || null,
       qty,
     });
     setAdded(true);
@@ -206,6 +210,11 @@ export default function ProductDetailPage({ params }) {
         .ribbon-chip { border: 1px solid var(--taupe); background: none; padding: 8px 18px; border-radius: 8px;
           font-family:'Marcellus'; font-size: 13px; cursor:pointer; color: var(--ink); transition: all .2s; }
         .ribbon-chip.active { border-color: var(--olive); background: var(--cream); color: var(--olive); }
+        .custom-name-row { margin-bottom: 20px; }
+        .custom-name-input { display: block; margin-top: 8px; width: 100%; max-width: 240px; padding: 10px 14px;
+          border: 1px solid var(--taupe); border-radius: 8px; font-family: 'Marcellus', serif; font-size: 14px;
+          color: var(--ink); background: var(--white); }
+        .custom-name-input:focus { outline: none; border-color: var(--olive); }
         .ribbon-specs-row { display:flex; gap: 20px; align-items:flex-start; margin-bottom: 22px; flex-wrap: wrap; }
         .ribbon-reference { width: 150px; max-width: 100%; border-radius: 10px; display: block; flex-shrink: 0; }
         .ribbon-specs-row .pd-bullets { flex: 1; min-width: 160px; margin: 0; }
@@ -350,6 +359,33 @@ export default function ProductDetailPage({ params }) {
           <h1>{product.name}</h1>
           <p className="pd-price">{product.priceLabel}</p>
           <p className="pd-installments">{product.installmentLabel}</p>
+
+          {product.variants && (
+            <>
+              <p className="pd-label">Elige tu opción: {variant}</p>
+              <div className="ribbon-options">
+                {product.variants.map((v) => (
+                  <button key={v} className={`ribbon-chip ${variant === v ? "active" : ""}`} onClick={() => setVariant(v)}>{v}</button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {product.customNameLabel && (
+            <div className="custom-name-row">
+              <label htmlFor="custom-name-input" className="pd-label">{product.customNameLabel}</label>
+              <input
+                id="custom-name-input"
+                type="text"
+                className="custom-name-input"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                placeholder="Ej. Juan"
+                maxLength={20}
+              />
+            </div>
+          )}
+
           <p className="pd-label">Color del listón para la cajita: {ribbon}</p>
           <div className="ribbon-options">
             {["Blanco", "Café", "Rosa Palo"].map((c) => (
@@ -378,7 +414,7 @@ export default function ProductDetailPage({ params }) {
           <a
             className="btn-personalize"
             href={`https://wa.me/573113290390?text=${encodeURIComponent(
-              `Hola! Quiero personalizar la caja "${product.name}" (listón ${ribbon}, cantidad ${qty}). ¿Me ayudan? 🎁`
+              `Hola! Quiero personalizar la caja "${product.name}" (listón ${ribbon}${variant ? `, opción ${variant}` : ""}${customName.trim() ? `, nombre "${customName.trim()}"` : ""}, cantidad ${qty}). ¿Me ayudan? 🎁`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

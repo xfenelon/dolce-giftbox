@@ -13,7 +13,7 @@ export default function CartDrawer({ open, onClose }) {
   const formattedTotal = `$${totalPrice.toLocaleString("es-CO")}`;
 
   const whatsappMessage = items
-    .map((i) => `- ${i.name}${i.ribbon ? ` (listón ${i.ribbon})` : ""} x${i.qty}`)
+    .map((i) => `- ${i.name}${i.ribbon ? ` (listón ${i.ribbon})` : ""}${i.variant ? ` (${i.variant})` : ""}${i.customName ? ` (nombre: ${i.customName})` : ""} x${i.qty}`)
     .join("%0A");
 
   return (
@@ -63,7 +63,7 @@ export default function CartDrawer({ open, onClose }) {
         ) : (
           <div className="cart-items">
             {items.map((item) => (
-              <div className="cart-item" key={`${item.slug}-${item.ribbon}`}>
+              <div className="cart-item" key={`${item.slug}-${item.ribbon}-${item.variant}-${item.customName}`}>
                 <div className="cart-item-photo">
                   <img
                     src={item.image || `/productos/${item.slug}-1.jpg`}
@@ -74,13 +74,15 @@ export default function CartDrawer({ open, onClose }) {
                 <div className="cart-item-info">
                   <h4>{item.name}</h4>
                   {item.ribbon && <p className="cart-item-ribbon">Listón: {item.ribbon}</p>}
+                  {item.variant && <p className="cart-item-ribbon">Opción: {item.variant}</p>}
+                  {item.customName && <p className="cart-item-ribbon">Nombre: {item.customName}</p>}
                   <div className="cart-item-controls">
                     <div className="cart-item-qty">
-                      <button onClick={() => updateQty(item.slug, item.ribbon, item.qty - 1)} aria-label="Menos"><Minus size={12} /></button>
+                      <button onClick={() => updateQty(item.slug, item.ribbon, item.qty - 1, item.variant, item.customName)} aria-label="Menos"><Minus size={12} /></button>
                       <span>{item.qty}</span>
-                      <button onClick={() => updateQty(item.slug, item.ribbon, item.qty + 1)} aria-label="Más"><Plus size={12} /></button>
+                      <button onClick={() => updateQty(item.slug, item.ribbon, item.qty + 1, item.variant, item.customName)} aria-label="Más"><Plus size={12} /></button>
                     </div>
-                    <button className="cart-item-remove" onClick={() => removeItem(item.slug, item.ribbon)} aria-label="Quitar">
+                    <button className="cart-item-remove" onClick={() => removeItem(item.slug, item.ribbon, item.variant, item.customName)} aria-label="Quitar">
                       <Trash2 size={16} />
                     </button>
                   </div>

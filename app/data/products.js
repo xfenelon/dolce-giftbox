@@ -97,6 +97,7 @@ const RAW_PRODUCTS = [
     category: "Bebé",
     price: 151200,
     bullets: ["Portachupos tejido a mano de osito o conejita", "Mameluco", "Par de medias"],
+  variants: ["Osito", "Conejita"],
   },
   {
     name: "Abuela/Abuelo",
@@ -118,6 +119,7 @@ const RAW_PRODUCTS = [
     category: "Bebé",
     price: 170900,
     bullets: ["Osito/a amigurumi", "Vela aromática", "Par de medias", "Tisanas de té"],
+ variants: ["Osito", "Osita"],
   },
   {
     name: "Bunny",
@@ -125,6 +127,7 @@ const RAW_PRODUCTS = [
     category: "Bebé",
     price: 129000,
     bullets: ["Conejo / osita amigurumi", "Vela aromática", "Mordedor rascaencías"],
+  variants: ["Conejito", "Osita"],
   },
   {
     name: "Alicia",
@@ -181,6 +184,7 @@ const RAW_PRODUCTS = [
     category: "Bebé",
     price: 199900,
     bullets: ["Conejo/a amigurumi", "Peine", "Mameluco", "Par de medias", "Mordedor rascaencías"],
+  variants: ["Conejito", "Conejita"],
   },
   {
     name: "Remmy",
@@ -406,6 +410,7 @@ const RAW_PRODUCTS = [
     category: "Para hombre",
     price: 120800,
     bullets: ["Termo digital", "Libreta + lapicero", "Mix de maní"],
+  customNameLabel: "Nombre para el termo",
   },
   {
     name: "Chocolat",
