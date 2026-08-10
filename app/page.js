@@ -56,6 +56,13 @@ function ImageBox({ ratio = "1 / 1", label = "Imagen pendiente", className = "" 
     </div>
   );
 }
+const HERO_SLIDES = [
+  { index: 1, href: "/productos?categoria=Beb%C3%A9" },
+  { index: 2, href: "/productos?categoria=Ramo%20de%20flores%20naturales" },
+  { index: 3, href: "/productos?categoria=Para%20mujer" },
+  { index: 4, href: "/productos?categoria=Para%20hombre" },
+  { index: 5, href: "/productos" },
+];
 function HeroPhoto({ index, alt, label }) {
   const [error, setError] = useState(false);
   if (error) {
@@ -177,11 +184,11 @@ const featured = getProductBySlug("bianca");
   const [qty, setQty] = useState(1);
   const [testiIndex, setTestiIndex] = useState(0);
   const [heroIndex, setHeroIndex] = useState(1);
-  const nextHero = () => setHeroIndex((i) => (i % 3) + 1);
-  const prevHero = () => setHeroIndex((i) => ((i + 1) % 3) + 1);
+  const nextHero = () => setHeroIndex((i) => (i % HERO_SLIDES.length) + 1);
+  const prevHero = () => setHeroIndex((i) => ((i + HERO_SLIDES.length - 2) % HERO_SLIDES.length) + 1);
 useEffect(() => {
     const interval = setInterval(() => {
-      setHeroIndex((i) => (i % 3) + 1);
+     setHeroIndex((i) => (i % HERO_SLIDES.length) + 1);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
@@ -265,7 +272,7 @@ useEffect(() => {
         .hero { position:relative; padding: 46px 6vw 30px; max-width: 1400px; margin: 0 auto; }
         .hero-frame { position: relative; border-radius: 24px; overflow: hidden; }
         .hero-track { display: flex; transition: transform .6s cubic-bezier(0.65, 0, 0.35, 1); }
-        .hero-slide { flex: 0 0 100%; min-width: 0; }
+        .hero-slide { flex: 0 0 100%; min-width: 0; display: block; }
         .hero-frame .img-placeholder { aspect-ratio: 16/8; border-radius: 0; }
         .hero-frame .hero-photo { width:100%; aspect-ratio: 16 / 8; object-fit: cover; display:block; }
         .pd-main .featured-photo { width: 100%; aspect-ratio: 4 / 3.6; object-fit: cover; border-radius: 16px; display: block; }
@@ -406,9 +413,9 @@ useEffect(() => {
 
    <header className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar-left">
-          <div className="brand">
+          <Link href="/" className="brand">
             <img src="/logoprincipal.png" alt="Dolce Giftbox" className="brand-logo-img" />
-          </div>
+          </Link>
         <ul className="nav-links">
             <li><Link href="/">Inicio</Link></li>
             <li className="nav-dropdown">
@@ -461,18 +468,18 @@ useEffect(() => {
       )}
 
   <section className="hero">
-  <Link href="/productos" className="hero-frame" style={{ display: "block" }}>
+ <div className="hero-frame">
     <div className="hero-track" style={{ transform: `translateX(-${(heroIndex - 1) * 100}%)` }}>
-      {[1, 2, 3].map((i) => (
-        <div className="hero-slide" key={i}>
-          <HeroPhoto index={i} alt="Dolce Giftbox" label={`Foto hero ${i}`} />
-        </div>
+      {HERO_SLIDES.map((slide) => (
+        <Link href={slide.href} className="hero-slide" key={slide.index}>
+          <HeroPhoto index={slide.index} alt="Dolce Giftbox" label={`Foto hero ${slide.index}`} />
+        </Link>
       ))}
     </div>
-  </Link>
+  </div>
   <div className="carousel-nav">
     <button aria-label="Anterior" onClick={prevHero}><ChevronLeft size={18} /></button>
-    <span>{heroIndex} / 3</span>
+    <span>{heroIndex} / {HERO_SLIDES.length}</span>
     <button aria-label="Siguiente" onClick={nextHero}><ChevronRight size={18} /></button>
   </div>
 </section>

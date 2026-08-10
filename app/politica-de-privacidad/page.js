@@ -249,9 +249,9 @@ export default function PoliticaDePrivacidadPage() {
 
       <header className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar-left">
-          <div className="brand">
+          <Link href="/" className="brand">
             <img src="/logoprincipal.png" alt="Dolce Giftbox" className="brand-logo-img" />
-          </div>
+          </Link>
           <ul className="nav-links">
             <li><Link href="/">Inicio</Link></li>
             <li className="nav-dropdown">
