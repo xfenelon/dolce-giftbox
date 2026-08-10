@@ -25,7 +25,7 @@ function ImageBox({ ratio = "1 / 1", label = "Imagen pendiente" }) {
     </div>
   );
 }
-function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen pendiente" }) {
+function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen pendiente", packagingPhoto }) {
   const [error, setError] = useState(false);
   if (error) {
     return <ImageBox ratio={ratio} label={label} />;
@@ -33,8 +33,12 @@ function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen p
   return (
     <div className="product-photo-frame" style={{ aspectRatio: ratio }}>
       <img src={`/productos/${slug}-${index}.jpg`} alt={alt} onError={() => setError(true)} />
+      {packagingPhoto && (
+        <img src={`/empaques/${packagingPhoto}.jpg`} alt="Empaque" className="packaging-badge" />
+      )}
     </div>
   );
+
 }
 
 const SORT_OPTIONS = [
@@ -191,6 +195,7 @@ const { totalCount } = useCart();
 
         .product-photo-frame { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: var(--cream); }
         .product-photo-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.product-photo-frame img.packaging-badge { position: absolute !important; inset: auto !important; bottom: 6px !important; right: 6px !important; width: 34px !important; height: 34px !important; border-radius: 8px; object-fit: cover; border: 2px solid var(--white); box-shadow: 0 2px 6px rgba(74,58,44,0.25); z-index: 2; }
 
         .page-header { padding: 40px 6vw 10px; text-align:center; }
         .catalog-intro { max-width: 640px; margin: 0 auto 30px; text-align: center; padding: 0 6vw; }
@@ -249,6 +254,7 @@ const { totalCount } = useCart();
         .product-card:hover .product-photo-frame { transform: translateY(-4px); }
         .product-card h3 { font-size: 15px; color: var(--ink); margin: 0 0 3px; font-weight: 400; }
         .product-card p { font-size: 13px; color: var(--taupe); margin: 0; }
+
 
         .pagination { display:flex; align-items:center; justify-content:center; gap: 20px; margin-top: 44px; color: var(--olive); }
         .pagination button { background:none; border:none; cursor:pointer; color: var(--olive); display:flex; opacity: 1; transition: opacity .2s; }
@@ -413,9 +419,10 @@ const { totalCount } = useCart();
         <div className="product-grid">
           {pageProducts.map((p) => (
             <Link href={`/productos/${p.slug}`} className="product-card" key={p.slug}>
-              <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} />
+              <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} packagingPhoto={p.packaging?.photo} />
               <h3>{p.name}</h3>
               <p>{p.priceLabel}</p>
+              
             </Link>
           ))}
         </div>

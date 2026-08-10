@@ -3,6 +3,70 @@
 // "Cumpleaños hombre" (3), "Para mujer" (14), "Para hombre" (7),
 // "Recuperación/Condolencias" (4), "Ramo de flores naturales" (3).
 
+import { getPackagingById } from "./packaging";
+
+// Qué empaque real (de app/data/packaging.js) usa cada caja prediseñada.
+// Los ramos de flores no llevan empaque, por eso no aparecen aquí.
+const PACKAGING_BY_SLUG = {
+  baby: "caja-pequena-madera",
+  dad: "caja-mediana-madera",
+  indigo: "caja-mediana-madera",
+  abuela: "caja-mediana-madera",
+  rayas: "caja-mediana-madera",
+  coral: "caja-mediana-madera",
+  bunny: "corazon-madera-pequena",
+  alicia: "caja-mediana-madera",
+  moonlight: "caja-mediana-madera",
+  noah: "caja-mediana-madera",
+  dream: "corazon-madera-grande",
+  sweet: "caja-mediana-madera",
+  smile: "caja-mediana-madera",
+  emma: "caja-mediana-madera",
+  newborn: "caja-grande-madera",
+  remmy: "cesta-croche",
+  jerry: "caja-mediana-madera",
+  teddy: "caja-mediana-madera",
+  mel: "caja-mediana-madera",
+  cebrita: "cesta-croche",
+  emily: "caja-mediana-madera",
+
+  gratitude: "caja-letrero-madera",
+  esmeralda: "caja-mediana-madera",
+  estrella: "estrella-madera",
+  orquidea: "caja-redonda-rosada",
+
+  pardo: "caja-mediana-madera",
+  granate: "caja-mediana-madera",
+  classic: "caja-grande-madera",
+
+  vides: "caja-pequena-madera",
+  serenidad: "estrella-madera",
+  vintage: "caja-redonda-rosada",
+  cielo: "bolsa-yute",
+  bianca: "caja-mediana-madera",
+  rust: "caja-mediana-madera",
+  shade: "caja-grande-madera",
+  blossom: "caja-letrero-madera",
+  purity: "bolso-mimbre",
+  delicate: "caja-mediana-madera",
+  rose: "caja-redonda-rosada",
+  creme: "cesta-croche",
+  aurora: "canasta-metalica",
+  mabe: "corazon-madera-pequena",
+
+  legado: "caja-mediana-madera",
+  // origen: pendiente, la clienta no ha confirmado el empaque
+  roble: "canasta-metalica",
+  escencia: "caja-mediana-madera",
+  chocolat: "canasta-metalica",
+  sunrise: "caja-grande-madera",
+  luna: "canasta-metalica",
+
+  calmness: "cesta-croche",
+  hope: "caja-mediana-madera",
+  bienestar: "caja-mediana-madera",
+  fortaleza: "caja-mediana-madera",
+};
 function slugify(name) {
   return name
     .toLowerCase()
@@ -413,16 +477,20 @@ const RAW_PRODUCTS = [
   },
 ];
 
-export const PRODUCTS = RAW_PRODUCTS.map((p) => ({
-  ...p,
-  slug: p.slug || slugify(p.name),
-  bullets: p.bullets || ["Descripción pendiente — se completará con el detalle real de este producto."],
-  price: p.price || null,
-  priceLabel: p.price ? `$${p.price.toLocaleString("es-CO")}` : "Precio pendiente",
-  installmentLabel: p.price
-    ? `2 cuotas sin intereses de $${Math.round(p.price / 2).toLocaleString("es-CO")}`
-    : "",
-}));
+export const PRODUCTS = RAW_PRODUCTS.map((p) => {
+  const slug = p.slug || slugify(p.name);
+  return {
+    ...p,
+    slug,
+    bullets: p.bullets || ["Descripción pendiente — se completará con el detalle real de este producto."],
+    price: p.price || null,
+    priceLabel: p.price ? `$${p.price.toLocaleString("es-CO")}` : "Precio pendiente",
+    installmentLabel: p.price
+      ? `2 cuotas sin intereses de $${Math.round(p.price / 2).toLocaleString("es-CO")}`
+      : "",
+    packaging: getPackagingById(PACKAGING_BY_SLUG[slug]) || null,
+  };
+});
 
 // Lista completa de categorías del sitio.
 export const CATEGORIES = [

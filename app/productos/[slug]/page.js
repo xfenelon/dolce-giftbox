@@ -36,22 +36,36 @@ function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen p
   );
 }
 
-function ProductGallery({ slug, name }) {
+function ProductGallery({ slug, name, packaging }) {
   const [active, setActive] = useState(1);
   return (
     <>
-      <ProductPhoto slug={slug} index={active} alt={`Foto ${name}`} label={`Foto ${name}`} />
+      {active === 2 && packaging ? (
+        <div className="product-photo-frame" style={{ aspectRatio: "1 / 1" }}>
+          <img src={`/empaques/${packaging.photo}.jpg`} alt={`Empaque: ${packaging.name}`} />
+        </div>
+      ) : (
+        <ProductPhoto slug={slug} index={1} alt={`Foto ${name}`} label={`Foto ${name}`} />
+      )}
       <div className="pd-thumbs">
-        {[1, 2].map((i) => (
+        <button
+          className={`pd-thumb ${active === 1 ? "active" : ""}`}
+          onClick={() => setActive(1)}
+          aria-label="Ver foto del producto"
+        >
+          <ProductPhoto slug={slug} index={1} alt="Foto del producto" label="Foto 1" />
+        </button>
+        {packaging && (
           <button
-            key={i}
-            className={`pd-thumb ${active === i ? "active" : ""}`}
-            onClick={() => setActive(i)}
-            aria-label={`Ver foto ${i}`}
+            className={`pd-thumb ${active === 2 ? "active" : ""}`}
+            onClick={() => setActive(2)}
+            aria-label="Ver empaque"
           >
-            <ProductPhoto slug={slug} index={i} alt={`Miniatura ${i}`} label={`Foto ${i}`} />
+            <div className="product-photo-frame" style={{ aspectRatio: "1 / 1" }}>
+              <img src={`/empaques/${packaging.photo}.jpg`} alt={packaging.name} />
+            </div>
           </button>
-        ))}
+        )}
       </div>
     </>
   );
@@ -325,7 +339,7 @@ export default function ProductDetailPage({ params }) {
       <section className="pd-section">
        
         <div className="pd-main">
-          <ProductGallery slug={product.slug} name={product.name} />
+          <ProductGallery slug={product.slug} name={product.name} packaging={product.packaging} />
           <div className="pd-share">
             <a href="#" aria-label="Compartir"><Share2 size={16} /></a>
           </div>
