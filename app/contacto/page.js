@@ -28,6 +28,7 @@ function ContactIllustration() {
 }
 
 export default function ContactoPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [dudasOpen, setDudasOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 const { totalCount } = useCart();
