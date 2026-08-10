@@ -143,6 +143,16 @@ const { totalCount } = useCart();
         .brand-logo-img { height: 56px; width: auto; display: block; }
         .nav-links { display:flex; gap: 36px; list-style:none; margin:0; padding:0; }
        .nav-links li { font-size: 13px; cursor:pointer; position:relative; padding-bottom:4px; color: var(--olive); text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown span { cursor: pointer; }
+        .dropdown-menu { position: absolute; top: 100%; left: 0; background: var(--white); border: 1px solid var(--tan);
+          border-radius: 10px; box-shadow: 0 12px 30px rgba(74,58,44,0.12); padding: 10px 0; min-width: 220px;
+          display: flex; flex-direction: column; opacity: 0; visibility: hidden; transform: translateY(6px);
+          transition: opacity .2s, transform .2s, visibility .2s; z-index: 50; }
+        .nav-dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu a { padding: 9px 20px; font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--olive); text-decoration:none; white-space: nowrap; }
+        .dropdown-menu a:hover { background: var(--cream); }
+        .dropdown-all { border-top: 1px solid var(--tan); margin-top: 6px; padding-top: 12px !important; }
         .nav-links li::after { content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:var(--olive); transition:width .3s; }
         .nav-links li:hover::after { width:100%; }
         .nav-links a, .footer-nav a { color: inherit; text-decoration: none; }
@@ -285,18 +295,23 @@ const { totalCount } = useCart();
             <li className="nav-dropdown">
               <Link href="/productos">Detalles prediseñados</Link>
               <div className="dropdown-menu">
-                {CATEGORIES.map((cat) => (
+               {CATEGORIES.map((cat) => (
                   <Link key={cat} href={`/productos?categoria=${encodeURIComponent(cat)}`}>{cat}</Link>
                 ))}
                 <Link href="/productos" className="dropdown-all">Todos</Link>
               </div>
             </li>
             <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
-            <li><Link href="/contacto">Contacto</Link></li>
             <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
-         <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
-          
-        </ul>
+            <li className="nav-dropdown">
+              <span>Dudas</span>
+              <div className="dropdown-menu">
+                <Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link>
+                <Link href="/terminos-y-condiciones">Términos y Condiciones</Link>
+                <Link href="/politica-de-privacidad">Política de Privacidad</Link>
+              </div>
+            </li>
+          </ul>
         </div>
         <div className="nav-icons">
           <button className="icon-btn" aria-label="Buscar" onClick={() => setSearchOpen(true)}><Search size={19} /></button>
@@ -383,23 +398,7 @@ const { totalCount } = useCart();
   </button>
 </div>
 
-<div className="catalog-intro">
-  <p>Cada uno de nuestros detalles está diseñado cuidadosamente para crear regalos únicos, delicados y especiales.</p>
-  <ul>
-    <li>Tarjeta personalizada incluida</li>
-    <li>Productos artesanales y ecoamigables</li>
-    <li>Personalización disponible (+$3.000)</li>
-  </ul>
-  
-    <a
-    className="catalog-cta"
-    href="https://wa.me/573113290390?text=Hola!%20Quiero%20armar%20un%20detalle%20a%20mi%20gusto%2C%20%C2%BFme%20ayudan%3F%20%F0%9F%8E%81"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    ¿Quieres cambiar algún producto? Arma tu detalle a tu gusto
-  </a>
-</div>
+
 <section className="section">
         <div className="product-grid">
           {pageProducts.map((p) => (

@@ -36,6 +36,26 @@ function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen p
   );
 }
 
+function ProductGallery({ slug, name }) {
+  const [active, setActive] = useState(1);
+  return (
+    <>
+      <ProductPhoto slug={slug} index={active} alt={`Foto ${name}`} label={`Foto ${name}`} />
+      <div className="pd-thumbs">
+        {[1, 2].map((i) => (
+          <button
+            key={i}
+            className={`pd-thumb ${active === i ? "active" : ""}`}
+            onClick={() => setActive(i)}
+            aria-label={`Ver foto ${i}`}
+          >
+            <ProductPhoto slug={slug} index={i} alt={`Miniatura ${i}`} label={`Foto ${i}`} />
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
 export default function ProductDetailPage({ params }) {
   const { slug } = React.use(params);
   const product = getProductBySlug(slug);
@@ -96,7 +116,17 @@ export default function ProductDetailPage({ params }) {
         .navbar-left { display:flex; align-items:center; gap: 48px; }
         .brand-logo-img { height: 56px; width: auto; display: block; }
         .nav-links { display:flex; gap: 36px; list-style:none; margin:0; padding:0; }
-        .nav-links li { font-size: 14px; cursor:pointer; position:relative; padding-bottom:4px; color: var(--olive); }
+        .nav-links li { font-size: 13px; cursor:pointer; position:relative; padding-bottom:4px; color: var(--olive); text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown span { cursor: pointer; }
+        .dropdown-menu { position: absolute; top: 100%; left: 0; background: var(--white); border: 1px solid var(--tan);
+          border-radius: 10px; box-shadow: 0 12px 30px rgba(74,58,44,0.12); padding: 10px 0; min-width: 220px;
+          display: flex; flex-direction: column; opacity: 0; visibility: hidden; transform: translateY(6px);
+          transition: opacity .2s, transform .2s, visibility .2s; z-index: 50; }
+        .nav-dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu a { padding: 9px 20px; font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--olive); text-decoration:none; white-space: nowrap; }
+        .dropdown-menu a:hover { background: var(--cream); }
+        .dropdown-all { border-top: 1px solid var(--tan); margin-top: 6px; padding-top: 12px !important; }
         .nav-links li::after { content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:var(--olive); transition:width .3s; }
         .nav-links li:hover::after { width:100%; }
         .nav-links a, .footer-nav a { color: inherit; text-decoration: none; }
@@ -139,7 +169,12 @@ export default function ProductDetailPage({ params }) {
         .pd-gallery { display:flex; gap: 12px; width: 110px; flex-direction: column; }
         .pd-gallery .img-placeholder { aspect-ratio: 1/1; }
         .pd-main { flex: 1.2; min-width: 280px; max-width: 640px; margin: 0 auto; }
-        .pd-main .img-placeholder { aspect-ratio: 4 / 5; }
+         .pd-main .img-placeholder { aspect-ratio: 4 / 5; }
+        .pd-thumbs { display:flex; gap: 10px; margin-top: 12px; }
+        .pd-thumb { width: 64px; height: 64px; border-radius: 8px; overflow:hidden; padding:0; border: 2px solid transparent;
+          background:none; cursor:pointer; opacity: .65; transition: opacity .2s, border-color .2s; }
+        .pd-thumb.active { opacity: 1; border-color: var(--olive); }
+        .pd-thumb .product-photo-frame { border-radius: 6px; }
 
         .pd-share { display:flex; gap: 14px; margin-top: 16px; }
         .pd-share a { color: var(--olive); }
@@ -232,8 +267,15 @@ export default function ProductDetailPage({ params }) {
               </div>
             </li>
             <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
-            <li><Link href="/contacto">Contacto</Link></li>
             <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
+            <li className="nav-dropdown">
+              <span>Dudas</span>
+              <div className="dropdown-menu">
+                <Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link>
+                <Link href="/terminos-y-condiciones">Términos y Condiciones</Link>
+                <Link href="/politica-de-privacidad">Política de Privacidad</Link>
+              </div>
+            </li>
           </ul>
         </div>
         <div className="nav-icons">
@@ -272,7 +314,7 @@ export default function ProductDetailPage({ params }) {
       <section className="pd-section">
        
         <div className="pd-main">
-          <ProductPhoto slug={product.slug} index={1} alt={`Foto principal ${product.name}`} label={`Foto principal ${product.name}`} />
+          <ProductGallery slug={product.slug} name={product.name} />
           <div className="pd-share">
             <a href="#" aria-label="Compartir"><Share2 size={16} /></a>
           </div>

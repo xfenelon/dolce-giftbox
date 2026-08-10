@@ -44,6 +44,7 @@ export default function CartDrawer({ open, onClose }) {
         .cart-total-row { display:flex; justify-content: space-between; align-items:center; margin-bottom: 16px;
           font-family: 'Marcellus', serif; color: #4A3A2C; }
         .cart-total-row span:last-child { font-size: 18px; color: #927A5D; }
+        .cart-fit-note { text-align:center; font-size: 12px; color: #927A5D; opacity: .85; margin: 0 0 10px; }
         .cart-checkout-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
           background: #25D366; color: #fff; border:none; padding: 14px; border-radius: 999px;
           font-family:'Marcellus', serif; font-size: 14px; cursor:pointer; text-decoration:none; margin-bottom: 10px; }
@@ -96,6 +97,7 @@ export default function CartDrawer({ open, onClose }) {
               <span>Total</span>
               <span>{formattedTotal}</span>
             </div>
+          <p className="cart-fit-note">Confirmaremos que los productos quepan en el empaque.</p>
            <a className="cart-checkout-btn" href={`https://wa.me/573113290390?text=${encodeURIComponent("Hola! Quiero hacer este pedido:")}%0A${whatsappMessage}`} target="_blank" rel="noopener noreferrer">
   <MessageCircle size={17} /> Finalizar por WhatsApp
 </a>
