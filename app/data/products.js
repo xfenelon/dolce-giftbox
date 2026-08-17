@@ -473,12 +473,49 @@ const RAW_PRODUCTS = [
     bullets: ["Ramo de 17 rosas de exportación y eucalipto", "Decorado con papel delicado", "Lazo de tela y tarjeta con cuidados"],
   },
   
-  {
+    {
     name: "Florecer",
     slug: "florecer",
     category: "Ramo de flores naturales",
     price: 142900,
     bullets: ["Ramo compuesto por hortensias, rosas de exportación y eucalipto", "Decorado con papel delicado", "Lazo de tela y tarjeta con cuidados"],
+  },
+
+  // --- Categoría: Peluches de apego ---
+  {
+    name: "Oliver",
+    slug: "oliver",
+    category: "Peluches de apego",
+    price: 112000,
+    bullets: ["Peluche tejido a mano en crochet", "Tamaño: 31 cm", "Ideal para bebés y niños pequeños"],
+  },
+  {
+    name: "Lottie",
+    slug: "lottie",
+    category: "Peluches de apego",
+    price: 112000,
+    bullets: ["Peluche tejido a mano en crochet", "Tamaño: 48 cm", "Ideal para bebés y niños pequeños"],
+  },
+  {
+    name: "Sophie",
+    slug: "sophie",
+    category: "Peluches de apego",
+    price: 54000,
+    bullets: ["Peluche tejido a mano en crochet", "Tamaño: 25 cm", "Ideal para bebés y niños pequeños"],
+  },
+  {
+    name: "Theo",
+    slug: "thea",
+    category: "Peluches de apego",
+    price: 94000,
+    bullets: ["Peluche tejido a mano en crochet", "Tamaño: 34 cm", "Ideal para bebés y niños pequeños"],
+  },
+  {
+    name: "Millie",
+    slug: "millie",
+    category: "Peluches de apego",
+    price: 94000,
+    bullets: ["Peluche tejido a mano en crochet", "Tamaño: 34 cm", "Ideal para bebés y niños pequeños"],
   },
 ];
 
@@ -506,6 +543,7 @@ export const CATEGORIES = [
   "Para hombre",
   "Recuperación/Condolencias",
   "Ramo de flores naturales",
+  "Peluches de apego",
 ];
 
 export function getProductBySlug(slug) {
