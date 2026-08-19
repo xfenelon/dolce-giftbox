@@ -2,16 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+
 import { CATEGORIES } from "../../data/products";
 import CartDrawer from "../../components/CartDrawer";
 import CartToast from "../../components/CartToast";
 import { useCart } from "../../context/CartContext";
+import { useProducts } from "../../context/ProductsContext";
 import {
   ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign, ChevronDown,
   ImageIcon, Minus, Plus, Share2,
 } from "lucide-react";
-import { getProductBySlug, getRelatedProducts } from "../../data/products";
-
 const FONT_IMPORT =
   "@import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');";
 
@@ -71,7 +71,8 @@ function ProductGallery({ slug, name, packaging }) {
   );
 }
 export default function ProductDetailPage({ params }) {
-  const { slug } = React.use(params);
+    const { slug } = React.use(params);
+  const { getProductBySlug, getRelatedProducts, loading: productsLoading } = useProducts();
   const product = getProductBySlug(slug);
   const related = getRelatedProducts(slug, 4);
 
@@ -86,11 +87,27 @@ export default function ProductDetailPage({ params }) {
   const [cartOpen, setCartOpen] = useState(false);
   const { addItem, totalCount } = useCart();
 
-  useEffect(() => {
+   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Si los productos llegan después del primer render (carga desde Supabase),
+  // selecciona la primera variante en cuanto el producto esté disponible.
+  useEffect(() => {
+    if (product?.variants && !variant) {
+      setVariant(product.variants[0]);
+    }
+  }, [product, variant]);
+
+  if (productsLoading) {
+    return (
+      <div style={{ padding: "80px 6vw", textAlign: "center", fontFamily: "serif" }}>
+        <p>Cargando producto...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

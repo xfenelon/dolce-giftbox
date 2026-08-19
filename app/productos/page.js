@@ -6,7 +6,8 @@ import {
   ShoppingBag, Menu, X, Search, User, ChevronLeft, ChevronRight,
   ImageIcon, AtSign, MessageCircle, SlidersHorizontal, ChevronDown,
 } from "lucide-react";
-import { PRODUCTS, CATEGORIES } from "../data/products";
+import { CATEGORIES } from "../data/products";
+import { useProducts } from "../context/ProductsContext";
 import CartDrawer from "../components/CartDrawer";
 import CartToast from "../components/CartToast";
 import { useCart } from "../context/CartContext";
@@ -89,6 +90,7 @@ function ProductosPageContent() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 const { totalCount } = useCart();
+  const { products, loading: productsLoading } = useProducts();
   const [searchOpen, setSearchOpen] = useState(false);
   const [sort, setSort] = useState(null);
   const searchParams = useSearchParams();
@@ -110,9 +112,9 @@ const { totalCount } = useCart();
     return () => { document.body.style.overflow = ""; };
   }, [filtersOpen]);
 
-  const filtered = category === "Todos los productos"
-  ? PRODUCTS
-  : PRODUCTS.filter((p) => p.category === category);
+    const filtered = category === "Todos los productos"
+  ? products
+  : products.filter((p) => p.category === category);
   const sorted = sort
   ? [...filtered].sort((a, b) => (sort === "price-ascending" ? a.price - b.price : b.price - a.price))
   : filtered;
@@ -253,7 +255,13 @@ const { totalCount } = useCart();
         .product-card:hover .img-placeholder,
         .product-card:hover .product-photo-frame { transform: translateY(-4px); }
         .product-card h3 { font-size: 15px; color: var(--ink); margin: 0 0 3px; font-weight: 400; }
-        .product-card p { font-size: 13px; color: var(--taupe); margin: 0; }
+                .product-card p { font-size: 13px; color: var(--taupe); margin: 0; }
+        .product-card-photo-wrap { position: relative; margin-bottom: 12px; }
+        .product-card-photo-wrap .product-photo-frame { margin-bottom: 0; }
+        .product-card.unavailable .product-photo-frame img,
+        .product-card.unavailable .img-placeholder { opacity: 0.4; filter: grayscale(1); }
+        .product-agotado-badge { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(74,58,44,0.85);
+          color: var(--white); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 16px; border-radius: 999px; }
 
 
         .pagination { display:flex; align-items:center; justify-content:center; gap: 20px; margin-top: 44px; color: var(--olive); }
@@ -414,19 +422,26 @@ const { totalCount } = useCart();
   </button>
 </div>
 
-
 <section className="section">
+        {productsLoading ? (
+          <p style={{ textAlign: "center", color: "var(--taupe)" }}>Cargando productos...</p>
+        ) : (
         <div className="product-grid">
           {pageProducts.map((p) => (
-            <Link href={`/productos/${p.slug}`} className="product-card" key={p.slug}>
-              <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} packagingPhoto={p.packaging?.photo} />
+                                 <Link href={`/productos/${p.slug}`} className={`product-card ${p.available === false ? "unavailable" : ""}`} key={p.slug}>
+              <div className="product-card-photo-wrap">
+                <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} packagingPhoto={p.packaging?.photo} />
+                {p.available === false && <span className="product-agotado-badge">Agotado</span>}
+              </div>
               <h3>{p.name}</h3>
               <p>{p.priceLabel}</p>
               
             </Link>
           ))}
         </div>
+        )}
         <div className="pagination">
+
           <button onClick={goPrev} disabled={page === 1} aria-label="Anterior"><ChevronLeft size={18} /></button>
           <span>{page} / {totalPages}</span>
           <button onClick={goNext} disabled={page === totalPages} aria-label="Siguiente"><ChevronRight size={18} /></button>

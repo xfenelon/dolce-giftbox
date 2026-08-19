@@ -1,8 +1,6 @@
 // Búsqueda combinada sobre todo el catálogo:
-// productos prediseñados (products.js) + productos individuales de Arma tu detalle (armaItems.js).
-
-import { PRODUCTS } from "./products";
-import { ARMA_ITEMS } from "./armaItems";
+// productos prediseñados + productos individuales de Arma tu detalle,
+// ambos traídos en vivo desde Supabase (ver ProductsContext y ArmaItemsContext).
 
 function normalize(str) {
   return str
@@ -11,11 +9,11 @@ function normalize(str) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-export function searchCatalog(query) {
+export function searchCatalog(query, products = [], armaItems = []) {
   const q = normalize(query.trim());
   if (!q) return [];
 
-  const fromProducts = PRODUCTS.filter((p) => normalize(p.name).includes(q)).map((p) => ({
+  const fromProducts = products.filter((p) => normalize(p.name).includes(q)).map((p) => ({
     key: `prediseñado-${p.slug}`,
     typeLabel: "Detalle prediseñado",
     name: p.name,
@@ -24,13 +22,13 @@ export function searchCatalog(query) {
     href: `/productos/${p.slug}`,
   }));
 
-  const fromArma = ARMA_ITEMS.filter((p) => normalize(p.name).includes(q)).map((p) => ({
+  const fromArma = armaItems.filter((p) => normalize(p.name).includes(q)).map((p) => ({
     key: `arma-${p.slug}`,
     typeLabel: "Arma tu detalle",
     name: p.name,
     priceLabel: p.priceLabel,
     image: `/arma-productos/${p.folder}/${p.slug}.jpg`,
-    href: `/arma-tu-detalle?categoria=${encodeURIComponent(p.category)}`,
+        href: `/arma-tu-detalle?categoria=${encodeURIComponent(p.category)}&producto=${p.slug}`,
   }));
 
   return [...fromProducts, ...fromArma].slice(0, 20);

@@ -12,7 +12,8 @@ import {
   ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign, ImageIcon, Minus, Plus, ChevronDown,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
-import { ARMA_ITEMS, ARMA_CATEGORIES } from "../data/armaItems";
+import { ARMA_CATEGORIES } from "../data/armaItems";
+import { useArmaItems } from "../context/ArmaItemsContext";
 
 const FONT_IMPORT =
   "@import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');";
@@ -82,7 +83,7 @@ function PackagingCard({ pkg, onChoose }) {
   );
 }
 
-function ArmaProductCard({ item, addItem }) {
+function ArmaProductCard({ item, addItem, highlighted }) {
   const [qty, setQty] = useState(1);
 
   const handleAdd = () => {
@@ -98,7 +99,7 @@ function ArmaProductCard({ item, addItem }) {
   };
 
   return (
-    <div className={`packaging-card arma-card ${!item.available ? "unavailable" : ""}`}>
+        <div id={`arma-item-${item.slug}`} className={`packaging-card arma-card ${!item.available ? "unavailable" : ""} ${highlighted ? "highlighted" : ""}`}>
       {!item.available && <span className="packaging-badge">Agotado</span>}
       <ArmaItemPhoto folder={item.folder} slug={item.slug} alt={item.name} label={item.name} />
       <h3>{item.name}</h3>
@@ -155,8 +156,9 @@ function FaqItem({ q, a }) {
 }
 function ArmaTuDetalleContent() {
   const searchParams = useSearchParams();
-  const categoriaFromUrl = searchParams.get("categoria");
+    const categoriaFromUrl = searchParams.get("categoria");
   const initialTab = TABS.includes(categoriaFromUrl) ? categoriaFromUrl : TABS[0];
+  const productoFromUrl = searchParams.get("producto");
 const [menuOpen, setMenuOpen] = useState(false);
   const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -164,7 +166,18 @@ const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
   const { totalCount, addItem } = useCart();
-  const [packaging, setPackaging] = useState([]);
+     const [packaging, setPackaging] = useState([]);
+  const { armaItems, loading: armaItemsLoading } = useArmaItems();
+  const [highlightedSlug, setHighlightedSlug] = useState(productoFromUrl || null);
+
+  useEffect(() => {
+    if (!productoFromUrl || armaItemsLoading) return;
+    const el = document.getElementById(`arma-item-${productoFromUrl}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    const timer = setTimeout(() => setHighlightedSlug(null), 2200);
+    return () => clearTimeout(timer);
+  }, [productoFromUrl, armaItemsLoading, activeTab]);
 
   useEffect(() => {
     async function fetchPackaging() {
@@ -190,7 +203,7 @@ const [menuOpen, setMenuOpen] = useState(false);
   };
 
   const isPackagingTab = activeTab === "Empaques";
-  const filteredArmaItems = ARMA_ITEMS.filter((item) => item.category === activeTab);
+    const filteredArmaItems = armaItems.filter((item) => item.category === activeTab);
 
   return (
     <div className="dolce-root">
@@ -269,8 +282,14 @@ const [menuOpen, setMenuOpen] = useState(false);
         .packaging-card { background: var(--cream); border-radius: 16px; padding: 18px; text-align:center; position: relative; }
         .packaging-photo-frame { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; background: var(--white); margin-bottom: 14px; }
         .packaging-photo-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-        .packaging-card.unavailable .packaging-photo-frame img,
+                .packaging-card.unavailable .packaging-photo-frame img,
         .packaging-card.unavailable .img-placeholder { opacity: 0.4; filter: grayscale(1); }
+        .packaging-card.highlighted { animation: highlightPulse 2.2s ease; border-radius: 16px; }
+        @keyframes highlightPulse {
+          0% { box-shadow: 0 0 0 3px var(--olive); }
+          80% { box-shadow: 0 0 0 3px var(--olive); }
+          100% { box-shadow: 0 0 0 0 transparent; }
+        }
         .packaging-badge { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); background: rgba(74,58,44,0.85);
           color: var(--white); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 16px; border-radius: 999px; }
         .packaging-card h3 { font-size: 15px; color: var(--ink); margin: 0 0 6px; font-weight: 400; }
@@ -416,13 +435,15 @@ const [menuOpen, setMenuOpen] = useState(false);
           ))}
         </div>
 
-        <div className="packaging-grid">
+                <div className="packaging-grid">
          {isPackagingTab
             ? packaging.map((pkg) => (
                 <PackagingCard key={pkg.slug} pkg={pkg} onChoose={handleChoosePackaging} />
               ))
-            : filteredArmaItems.map((item) => (
-                <ArmaProductCard key={item.slug} item={item} addItem={addItem} />
+            : armaItemsLoading
+            ? <p style={{ textAlign: "center", color: "var(--taupe)", gridColumn: "1 / -1" }}>Cargando productos...</p>
+                        : filteredArmaItems.map((item) => (
+                <ArmaProductCard key={item.slug} item={item} addItem={addItem} highlighted={item.slug === highlightedSlug} />
               ))}
         </div>
       </section>

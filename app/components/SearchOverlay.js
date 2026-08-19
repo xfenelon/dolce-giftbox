@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { X, Search, ImageIcon } from "lucide-react";
 import { searchCatalog } from "../data/search";
+import { useProducts } from "../context/ProductsContext";
+import { useArmaItems } from "../context/ArmaItemsContext";
 
 function ResultPhoto({ src, alt }) {
   const [error, setError] = useState(false);
@@ -23,7 +25,9 @@ function ResultPhoto({ src, alt }) {
 
 export default function SearchOverlay({ open, onClose }) {
   const [query, setQuery] = useState("");
-  const results = query.trim().length >= 2 ? searchCatalog(query) : [];
+  const { products } = useProducts();
+  const { armaItems } = useArmaItems();
+  const results = query.trim().length >= 2 ? searchCatalog(query, products, armaItems) : [];
 
   useEffect(() => {
     if (!open) setQuery("");
