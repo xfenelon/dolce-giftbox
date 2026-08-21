@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import CartDrawer from "./components/CartDrawer";
+import CartToast from "./components/CartToast";
 import SearchOverlay from "./components/SearchOverlay";
 import { useCart } from "./context/CartContext";
 import { getProductBySlug, CATEGORIES as PRODUCT_CATEGORIES } from "./data/products";
@@ -246,7 +247,8 @@ const { addItem, totalCount } = useCart();
 const featured = getProductBySlug("bianca");
   const [scrolled, setScrolled] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [ribbon, setRibbon] = useState("Blanco");
+    const [ribbon, setRibbon] = useState("Blanco");
+  const [showPackaging, setShowPackaging] = useState(false);
   const [qty, setQty] = useState(1);
   const [testiIndex, setTestiIndex] = useState(0);
   const [heroIndex, setHeroIndex] = useState(1);
@@ -429,8 +431,10 @@ useEffect(() => {
         .pd-gallery { display:flex; gap: 12px; width: 100px; flex-direction: column; }
         .pd-gallery .img-placeholder { aspect-ratio: 1/1; }
         .pd-main { flex: 1; min-width: 260px; position: relative; }
-        .packaging-badge { position: absolute; bottom: 6px; right: 6px; width: 40px; height: 40px; border-radius: 8px;
-          object-fit: cover; border: 2px solid var(--white); box-shadow: 0 2px 6px rgba(74,58,44,0.25); z-index: 2; }
+                .packaging-badge { position: absolute; bottom: 6px; right: 6px; width: 40px; height: 40px; border-radius: 8px;
+          object-fit: cover; border: 2px solid var(--white); box-shadow: 0 2px 6px rgba(74,58,44,0.25); z-index: 2;
+          cursor: pointer; transition: transform .2s; }
+        .packaging-badge:hover { transform: scale(1.1); }
         .pd-main .img-placeholder { aspect-ratio: 4/3.6; }
         .pd-info { flex: 1; min-width: 280px; }
         .pd-info h3 { font-family:'Marcellus'; font-size: 28px; color: var(--olive); margin: 0 0 8px; font-weight:400; }
@@ -470,7 +474,16 @@ useEffect(() => {
           overflow: hidden; display:flex; align-items:center; justify-content:center; border:none;
           background: none; cursor:pointer; transition: transform .25s; text-decoration:none; }
         .whatsapp-fab img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .whatsapp-fab:hover { transform: scale(1.08); }
+                .whatsapp-fab:hover { transform: scale(1.08); }
+        .cart-toast { position: fixed; top: 90px; right: 24px; z-index: 90; background: var(--white); border: 1px solid var(--tan);
+          border-radius: 14px; box-shadow: 0 12px 30px rgba(74,58,44,0.18); padding: 14px 16px; display:flex; align-items:center; gap: 12px;
+          max-width: 280px; animation: toastIn .3s ease; }
+        .cart-toast-icon { width: 28px; height: 28px; border-radius: 50%; background: #DCEFE2; color: #2E7D4F; display:flex;
+          align-items:center; justify-content:center; flex-shrink:0; }
+        .cart-toast-text { display:flex; flex-direction:column; font-size: 12.5px; color: var(--olive); }
+        .cart-toast-text strong { color: var(--ink); font-weight: 400; font-family:'Marcellus'; font-size: 13.5px; }
+        .cart-toast-btn { background: none; border: none; color: var(--olive); text-decoration: underline; font-size: 12px; cursor:pointer; white-space:nowrap; }
+        @keyframes toastIn { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
 
         @media (max-width: 900px) {
           .nav-links { display:none; } .menu-toggle { display:block; }
@@ -634,10 +647,21 @@ useEffect(() => {
       </section>
 <Reveal>
   <section className="section product-detail">
-    <div className="pd-main">
-      <FeaturedPhoto slug={featured.slug} alt={featured.name} label={featured.name} />
-      {featured.packaging && (
-        <img src={`/empaques/${featured.packaging.photo}.jpg`} alt={featured.packaging.name} className="packaging-badge" />
+       <div className="pd-main">
+      {showPackaging && featured.packaging ? (
+        <img src={`/empaques/${featured.packaging.photo}.jpg`} alt={featured.packaging.name} className="featured-photo" />
+      ) : (
+        <FeaturedPhoto slug={featured.slug} alt={featured.name} label={featured.name} />
+      )}
+            {featured.packaging && (
+        <img
+          src={showPackaging ? `/productos/${featured.slug}-1.jpg` : `/empaques/${featured.packaging.photo}.jpg`}
+          alt={showPackaging ? featured.name : featured.packaging.name}
+          className="packaging-badge"
+          role="button"
+          tabIndex={0}
+          onClick={() => setShowPackaging((v) => !v)}
+        />
       )}
     </div>
     <div className="pd-info">
@@ -712,7 +736,8 @@ useEffect(() => {
       <a className="whatsapp-fab" href="https://wa.me/573113290390" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
         <img src="/whatsapp-boton.png" alt="Escríbenos por WhatsApp" />
       </a>
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+            <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartToast onViewCart={() => setCartOpen(true)} />
         <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );

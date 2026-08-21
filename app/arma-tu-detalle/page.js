@@ -4,10 +4,10 @@ import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { CATEGORIES } from "../data/products";
 import { useSearchParams } from "next/navigation";
-import CartDrawer from "../components/CartDrawer";
-import CartToast from "../components/CartToast";
+import ArmaCartDrawer from "../components/ArmaCartDrawer";
+import ArmaCartToast from "../components/ArmaCartToast";
 import SearchOverlay from "../components/SearchOverlay";
-import { useCart } from "../context/CartContext";
+import { useArmaCart } from "../context/ArmaCartContext";
 import {
   ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign, ImageIcon, Minus, Plus, ChevronDown,
 } from "lucide-react";
@@ -77,7 +77,7 @@ function PackagingCard({ pkg, onChoose }) {
         disabled={!pkg.available}
         onClick={() => onChoose({ ...pkg, priceLabel })}
       >
-        {pkg.available ? "Elegir este empaque" : "Agotado"}
+                {pkg.available ? "Agregar caja" : "Agotado"}
       </button>
     </div>
   );
@@ -92,7 +92,8 @@ function ArmaProductCard({ item, addItem, highlighted }) {
       name: item.name,
       priceLabel: item.priceLabel,
       price: item.price,
-      image: `/arma-productos/${item.folder}/${item.slug}.jpg`,
+            image: `/arma-productos/${item.folder}/${item.slug}.jpg`,
+      type: "producto",
       qty,
     });
     setQty(1);
@@ -165,7 +166,7 @@ const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
-  const { totalCount, addItem } = useCart();
+    const { totalCount, addItem } = useArmaCart();
      const [packaging, setPackaging] = useState([]);
   const { armaItems, loading: armaItemsLoading } = useArmaItems();
   const [highlightedSlug, setHighlightedSlug] = useState(productoFromUrl || null);
@@ -197,9 +198,16 @@ const [menuOpen, setMenuOpen] = useState(false);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleChoosePackaging = (pkg) => {
-    const message = `Hola! Quiero armar mi detalle. Elegí el empaque: "${pkg.name}" (${pkg.dimensions}, ${pkg.priceLabel}). ¿Me ayudan a elegir qué va adentro? 🎁`;
-    window.open(`https://wa.me/573113290390?text=${encodeURIComponent(message)}`, "_blank");
+   const handleChoosePackaging = (pkg) => {
+    addItem({
+      slug: pkg.slug,
+      name: pkg.name,
+      priceLabel: pkg.priceLabel,
+      price: pkg.price,
+            image: `/empaques/${pkg.photo}.jpg`,
+      type: "empaque",
+      qty: 1,
+    });
   };
 
   const isPackagingTab = activeTab === "Empaques";
@@ -473,8 +481,8 @@ const [menuOpen, setMenuOpen] = useState(false);
         <img src="/whatsapp-boton.png" alt="Escríbenos por WhatsApp" />
       </a>
 
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
-      <CartToast onViewCart={() => setCartOpen(true)} />
+            <ArmaCartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <ArmaCartToast onViewCart={() => setCartOpen(true)} />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );

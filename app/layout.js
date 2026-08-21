@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./context/CartContext";
+import { ArmaCartProvider } from "./context/ArmaCartContext";
 import { ProductsProvider } from "./context/ProductsContext";
 import { ArmaItemsProvider } from "./context/ArmaItemsContext";
 
@@ -23,7 +24,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
     <body>
-      <ProductsProvider><ArmaItemsProvider><CartProvider>{children}</CartProvider></ArmaItemsProvider></ProductsProvider>
+            <ProductsProvider><ArmaItemsProvider><CartProvider><ArmaCartProvider>{children}</ArmaCartProvider></CartProvider></ArmaItemsProvider></ProductsProvider>
 </body>
     </html>
   );

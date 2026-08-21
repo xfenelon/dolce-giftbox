@@ -118,13 +118,16 @@ export default function ProductDetailPage({ params }) {
     );
   }
 
+  
+  const isPeluche = product.category === "Peluches de apego";
+
   const handleAddToCart = () => {
     addItem({
       slug: product.slug,
       name: product.name,
       priceLabel: product.priceLabel,
       price: product.price,
-      ribbon,
+      ribbon: isPeluche ? null : ribbon,
       variant: variant || null,
       customName: customName.trim() || null,
       qty,
@@ -132,7 +135,6 @@ export default function ProductDetailPage({ params }) {
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
-
   return (
     <div className="dolce-root">
       <style>{`
@@ -403,14 +405,20 @@ export default function ProductDetailPage({ params }) {
             </div>
           )}
 
-          <p className="pd-label">Color del listón para la cajita: {ribbon}</p>
-          <div className="ribbon-options">
-            {["Blanco", "Café", "Rosa Palo"].map((c) => (
-              <button key={c} className={`ribbon-chip ${ribbon === c ? "active" : ""}`} onClick={() => setRibbon(c)}>{c}</button>
-            ))}
-          </div>
+                 {!isPeluche && (
+            <>
+              <p className="pd-label">Color del listón para la cajita: {ribbon}</p>
+              <div className="ribbon-options">
+                {["Blanco", "Café", "Rosa Palo"].map((c) => (
+                  <button key={c} className={`ribbon-chip ${ribbon === c ? "active" : ""}`} onClick={() => setRibbon(c)}>{c}</button>
+                ))}
+              </div>
+            </>
+          )}
           <div className="ribbon-specs-row">
-            <img src="/liston-referencia.jpg" alt="Colores de listón disponibles: café, blanco y palo rosa" className="ribbon-reference" />
+            {!isPeluche && (
+              <img src="/liston-referencia.jpg" alt="Colores de listón disponibles: café, blanco y palo rosa" className="ribbon-reference" />
+            )}
             <ul className="pd-bullets">
               {product.bullets.map((b, i) => (
                 <li key={i}>• {b}</li>
@@ -431,7 +439,7 @@ export default function ProductDetailPage({ params }) {
           <a
             className="btn-personalize"
             href={`https://wa.me/573113290390?text=${encodeURIComponent(
-              `Hola! Quiero personalizar la caja "${product.name}" (listón ${ribbon}${variant ? `, opción ${variant}` : ""}${customName.trim() ? `, nombre "${customName.trim()}"` : ""}, cantidad ${qty}). ¿Me ayudan? 🎁`
+                            `Hola! Quiero personalizar "${product.name}"${!isPeluche ? ` (listón ${ribbon})` : ""}${variant ? `, opción ${variant}` : ""}${customName.trim() ? `, nombre "${customName.trim()}"` : ""}, cantidad ${qty}. ¿Me ayudan? 🎁`
             )}`}
             target="_blank"
             rel="noopener noreferrer"
