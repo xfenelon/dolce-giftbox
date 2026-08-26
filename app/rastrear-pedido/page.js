@@ -126,8 +126,8 @@ export default function RastrearPedidoPage() {
       </header>
 
       <div className="rp-wrap">
-        <h1 className="rp-title">Rastrea tu pedido</h1>
-        <p className="rp-subtitle">Escribe tu número de pedido y el celular que usaste al comprar.</p>
+                <h1 className="rp-title">Mis pedidos</h1>
+        <p className="rp-subtitle">Escribe tu número de pedido y el celular que usaste al comprar para ver su estado.</p>
 
         <form className="rp-form" onSubmit={handleSubmit}>
           <div className="rp-field">

@@ -174,7 +174,8 @@ const { totalCount } = useCart();
                 <Link href="/productos" className="dropdown-all">Todos</Link>
               </div>
             </li>
-            <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
+                        <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
+            <li><Link href="/rastrear-pedido">Mis pedidos</Link></li>
             <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
             <li className="nav-dropdown">
               <span>Dudas</span>
@@ -204,7 +205,8 @@ const { totalCount } = useCart();
           <ul>
             <li onClick={() => setMenuOpen(false)}><Link href="/">Inicio</Link></li>
             <li onClick={() => setMenuOpen(false)}><Link href="/productos">Detalles prediseñados</Link></li>
-            <li onClick={() => setMenuOpen(false)}><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
+                        <li onClick={() => setMenuOpen(false)}><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
+            <li onClick={() => setMenuOpen(false)}><Link href="/rastrear-pedido">Mis pedidos</Link></li>
             <li onClick={() => setMenuOpen(false)}><Link href="/quienes-somos">Quiénes Somos</Link></li>
             <li className="mobile-dudas" onClick={() => setDudasOpen(!dudasOpen)}>
               <span>Dudas</span>

@@ -24,6 +24,22 @@ function isLocalCity(city) {
   return LOCAL_CITIES.includes(normalizeCity(city));
 }
 
+// Ciudades del área metropolitana con envío a $5.000 (fuera de Medellín, que es gratis).
+const CHEAP_SHIPPING_CITIES = ["envigado", "sabaneta", "itagui", "bello"];
+
+function getShippingCost(city, boxCount) {
+  const normalized = normalizeCity(city);
+  if (!normalized || boxCount <= 0) return 0;
+  if (normalized === "medellin") return 0;
+  if (CHEAP_SHIPPING_CITIES.includes(normalized)) return 5000;
+  // Demás ciudades: $15.000 la primera caja, $35.000 dos cajas, $45.000 tres cajas,
+  // y +$15.000 por cada caja adicional a partir de la cuarta.
+  if (boxCount === 1) return 15000;
+  if (boxCount === 2) return 35000;
+  if (boxCount === 3) return 45000;
+  return 45000 + (boxCount - 3) * 15000;
+}
+
 function addDays(date, days) {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
@@ -170,7 +186,12 @@ export default function CheckoutPage() {
     ? "Entrega al día siguiente (Medellín y área metropolitana)."
     : "Fuera del área metropolitana: 2 a 4 días hábiles por mensajería.";
 
-  const formattedTotal = `$${totalPrice.toLocaleString("es-CO")}`;
+    const formattedTotal = `$${totalPrice.toLocaleString("es-CO")}`;
+
+  const shippingCost = useMemo(() => getShippingCost(city, totalCount), [city, totalCount]);
+  const grandTotal = totalPrice + shippingCost;
+  const formattedShipping = shippingCost === 0 ? "Gratis" : `$${shippingCost.toLocaleString("es-CO")}`;
+  const formattedGrandTotal = `$${grandTotal.toLocaleString("es-CO")}`;
 
   const isValidPhone = (phone) => /^[0-9]{10}$/.test(phone.trim());
 
@@ -221,8 +242,9 @@ export default function CheckoutPage() {
       p_unit_name: unitName || null,
       p_house_number: houseNumber || null,
       p_delivery_date: deliveryDate,
-      p_items: orderItems,
-      p_total: totalPrice,
+            p_items: orderItems,
+      p_subtotal: totalPrice,
+      p_shipping_cost: shippingCost,
       p_card_from: cardAnonymous ? null : (cardFrom || null),
       p_card_to: cardTo || null,
       p_card_message: cardMessage || null,
@@ -238,14 +260,38 @@ export default function CheckoutPage() {
     }
 
     const orderId = data;
+        try {
+      const prefRes = await fetch("/api/crear-preferencia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          items: orderItems,
+          shippingCost,
+        }),
+      });
+      const prefData = await prefRes.json();
+
+      if (!prefRes.ok || !prefData.checkoutUrl) {
+        throw new Error(prefData.error || "No se pudo iniciar el pago");
+      }
+
+      clearCart();
+      window.location.href = prefData.checkoutUrl;
+      return;
+    } catch (payErr) {
+      console.error("Error iniciando el pago con Mercado Pago:", payErr);
+    }
 
     const summaryLines = orderItems
       .map((i) => `- ${i.name}${i.ribbon ? ` (listón ${i.ribbon})` : ""}${i.variant ? ` (${i.variant})` : ""} x${i.qty}`)
       .join("%0A");
-    const waMessage =
+            const waMessage =
       `Hola! Hice el pedido #${orderId} en la página. ` +
       `Envía: ${senderName}, recibe: ${recipientName} en ${city}. ` +
-      `Entrega: ${deliveryDate}. Total: ${formattedTotal}. ¿Cómo hago el pago? 🎁%0A${summaryLines}`;
+      `Entrega: ${deliveryDate}. Envío: ${formattedShipping}. Total: ${formattedGrandTotal}. ` +
+      `Puedo ver el estado en Mis pedidos: https://dolce-giftbox.vercel.app/rastrear-pedido ` +
+      `¿Cómo hago el pago? 🎁%0A${summaryLines}`;
 
     setOrderDone({ id: orderId, waLink: `https://wa.me/573113290390?text=${waMessage}` });
     clearCart();
@@ -331,6 +377,7 @@ export default function CheckoutPage() {
           display:flex; align-items:center; justify-content:center; cursor:pointer; color: var(--olive); }
         .co-item-price { font-size: 13px; color: var(--olive); white-space: nowrap; }
         .co-item-remove { background:none; border:none; cursor:pointer; color: var(--taupe); }
+                .co-subtotal-row { display:flex; justify-content:space-between; margin-top: 6px; font-size: 13.5px; color: var(--olive); }
         .co-total-row { display:flex; justify-content:space-between; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--tan);
           font-size: 17px; color: var(--ink); }
 
@@ -553,14 +600,22 @@ export default function CheckoutPage() {
                   <Trash2 size={15} />
                 </button>
               </div>
-            ))}
+                     ))}
+            <div className="co-subtotal-row">
+              <span>Subtotal</span>
+              <span>{formattedTotal}</span>
+            </div>
+            <div className="co-subtotal-row">
+              <span>Envío{!city.trim() ? " (según ciudad)" : ""}</span>
+              <span>{city.trim() ? formattedShipping : "—"}</span>
+            </div>
             <div className="co-total-row">
               <span>Total</span>
-              <span>{formattedTotal}</span>
+              <span>{formattedGrandTotal}</span>
             </div>
           </div>
         </div>
-      )}
+      )}  
     </div>
   );
 }
