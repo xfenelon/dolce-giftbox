@@ -14,7 +14,7 @@ const path = require("path");
 const sharp = require("sharp");
 
 const PUBLIC_DIR = path.join(__dirname, "..", "public");
-const CARPETAS_EXCLUIDAS = ["quienes-somos"];
+const CARPETAS_EXCLUIDAS = [];
 const MAX_ANCHO = 1600;
 const CALIDAD_JPG = 78;
 
