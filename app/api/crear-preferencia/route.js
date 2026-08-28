@@ -29,9 +29,10 @@ export async function POST(request) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dolce-giftbox.vercel.app";
 
-    const preference = {
+      const preference = {
       items: mpItems,
       external_reference: String(orderId),
+      notification_url: `${siteUrl}/api/mercadopago-webhook`,
       back_urls: {
         success: `${siteUrl}/checkout/exito?pedido=${orderId}`,
         failure: `${siteUrl}/checkout/fallo?pedido=${orderId}`,
