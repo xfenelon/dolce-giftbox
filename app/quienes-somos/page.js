@@ -233,13 +233,15 @@ const { totalCount } = useCart();
       </div>
       <footer className="footer">
         <div className="footer-icon"><AtSign size={20} /></div>
-        <ul className="footer-nav">
+               <ul className="footer-nav">
           <li><Link href="/">Inicio</Link></li>
           <li><Link href="/productos">Detalles prediseñados</Link></li>
           <li><Link href="/arma-tu-detalle">Arma tu detalle</Link></li>
           <li><Link href="/contacto">Contacto</Link></li>
           <li><Link href="/quienes-somos">Quiénes Somos</Link></li>
           <li><Link href="/preguntas-frecuentes">Preguntas Frecuentes</Link></li>
+          <li><Link href="/terminos-y-condiciones">Términos y Condiciones</Link></li>
+          <li><Link href="/politica-de-privacidad">Política de Privacidad</Link></li>
         </ul>
         <div className="footer-contact">
           <p>+57 311 329 0390 (WhatsApp)</p>
