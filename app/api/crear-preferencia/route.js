@@ -62,7 +62,7 @@ export async function POST(request) {
 
     // Con credenciales de PRUEBA, Mercado Pago da un link "sandbox_init_point".
     // Con las de PRODUCCIÓN (cuando estén listas), dará "init_point" en su lugar.
-    const checkoutUrl = data.sandbox_init_point || data.init_point;
+    const checkoutUrl = data.init_point || data.sandbox_init_point;
 
     return NextResponse.json({ checkoutUrl });
   } catch (err) {
