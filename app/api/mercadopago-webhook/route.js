@@ -46,9 +46,15 @@ export async function POST(request) {
     .eq("id", orderId)
     .single();
 
+   console.log("DEBUG orderError:", orderError);
+  console.log("DEBUG order.sender_email:", order?.sender_email);
+  console.log("DEBUG SITE_URL:", process.env.NEXT_PUBLIC_SITE_URL);
+
   if (!orderError && order?.sender_email) {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/enviar-confirmacion`, {
+      const emailUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/enviar-confirmacion`;
+      console.log("DEBUG llamando a:", emailUrl);
+      const emailRes = await fetch(emailUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -65,10 +71,12 @@ export async function POST(request) {
           subtotal: order.subtotal,
           shippingCost: order.shipping_cost,
           total: order.total,
-        }),
+         }),
       });
+      const emailData = await emailRes.json().catch(() => null);
+      console.log("DEBUG respuesta de enviar-confirmacion:", emailRes.status, emailData);
     } catch (emailErr) {
-      console.error("Error mandando correo de confirmación:", emailErr);
+      console.error("Error mandando correo de confirmación:", emailErr?.message || emailErr);
     }
   }
 }
