@@ -157,6 +157,8 @@ export default function CheckoutPage() {
   const [senderName, setSenderName] = useState("");
   const [senderPhone, setSenderPhone] = useState("");
   const [senderPhoneError, setSenderPhoneError] = useState("");
+  const [senderEmail, setSenderEmail] = useState("");
+const [senderEmailError, setSenderEmailError] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setRecipientPhone] = useState("");
   const [recipientPhoneError, setRecipientPhoneError] = useState("");
@@ -194,6 +196,12 @@ export default function CheckoutPage() {
   const formattedGrandTotal = `$${grandTotal.toLocaleString("es-CO")}`;
 
   const isValidPhone = (phone) => /^[0-9]{10}$/.test(phone.trim());
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+const validateEmailField = (email, setError) => {
+  if (!email.trim()) { setError(""); return; }
+  setError(isValidEmail(email) ? "" : "Escribe un correo válido.");
+};
 
   const validatePhoneField = (phone, setError) => {
     if (!phone.trim()) {
@@ -207,7 +215,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     setErrorMsg("");
 
-    if (!senderName || !senderPhone || !recipientName || !recipientPhone || !city || !neighborhood || !address || !deliveryDate) {
+    if (!senderName || !senderPhone || !senderEmail || !recipientName || !recipientPhone || !city || !neighborhood || !address || !deliveryDate) {
       setErrorMsg("Por favor completa todos los campos obligatorios.");
       return;
     }
@@ -215,6 +223,10 @@ export default function CheckoutPage() {
       setErrorMsg("El celular debe tener 10 dígitos, solo números.");
       return;
     }
+    if (!isValidEmail(senderEmail)) {
+  setErrorMsg("Escribe un correo válido.");
+  return;
+}
     if (deliveryDate < minDateStr) {
       setErrorMsg("Elige una fecha de entrega válida según la ciudad.");
       return;
@@ -453,6 +465,20 @@ export default function CheckoutPage() {
                 {senderPhoneError && <span className="co-field-error">{senderPhoneError}</span>}
               </div>
             </div>
+            <div className="co-field-row">
+  <div className="co-field">
+    <label>Correo de quien envía</label>
+    <input
+      value={senderEmail}
+      onChange={(e) => setSenderEmail(e.target.value)}
+      onBlur={() => validateEmailField(senderEmail, setSenderEmailError)}
+      type="email"
+      placeholder="tucorreo@ejemplo.com"
+      required
+    />
+    {senderEmailError && <span className="co-field-error">{senderEmailError}</span>}
+  </div>
+</div>
 
             <p className="co-section-title">Quién recibe</p>
             <div className="co-field-row">

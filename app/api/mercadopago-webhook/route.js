@@ -33,11 +33,45 @@ export async function POST(request) {
     const payment = await payRes.json();
 
     if (payment.status === "approved" && payment.external_reference) {
-      await supabase.rpc("confirmar_pago_pedido", {
-        p_order_id: Number(payment.external_reference),
-        p_payment_id: String(paymentId),
+  const orderId = Number(payment.external_reference);
+
+  await supabase.rpc("confirmar_pago_pedido", {
+    p_order_id: orderId,
+    p_payment_id: String(paymentId),
+  });
+
+  const { data: order, error: orderError } = await supabase
+    .from("pedidos")
+    .select("*")
+    .eq("id", orderId)
+    .single();
+
+  if (!orderError && order?.sender_email) {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/enviar-confirmacion`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order.id,
+          senderEmail: order.sender_email,
+          senderName: order.sender_name,
+          senderPhone: order.sender_phone,
+          recipientName: order.recipient_name,
+          city: order.city,
+          neighborhood: order.neighborhood,
+          address: order.address,
+          deliveryDate: order.delivery_date,
+          items: order.items,
+          subtotal: order.subtotal,
+          shippingCost: order.shipping_cost,
+          total: order.total,
+        }),
       });
+    } catch (emailErr) {
+      console.error("Error mandando correo de confirmación:", emailErr);
     }
+  }
+}
 
     return NextResponse.json({ received: true });
   } catch (err) {
