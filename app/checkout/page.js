@@ -243,9 +243,10 @@ const validateEmailField = (email, setError) => {
       customName: i.customName || null,
     }));
 
-    const { data, error } = await supabase.rpc("crear_pedido", {
+       const { data, error } = await supabase.rpc("crear_pedido", {
       p_sender_name: senderName,
       p_sender_phone: senderPhone,
+      p_sender_email: senderEmail,
       p_recipient_name: recipientName,
       p_recipient_phone: recipientPhone,
       p_city: city,
