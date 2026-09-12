@@ -341,6 +341,7 @@ const inputStyle = {
   fontSize: 14,
   fontFamily: "'Marcellus', serif",
   color: "#4A3A2C",
+  background: "#fff",
 };
 const iconBtnStyle = {
   background: "none",
