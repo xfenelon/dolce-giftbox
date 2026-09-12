@@ -1,33 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Trash2, Pencil, Plus, X } from "lucide-react";
 import Link from "next/link";
-
-const CATEGORIES = [
-  "Bebé",
-  "Cumpleaños mujer",
-  "Cumpleaños hombre",
-  "Para mujer",
-  "Para hombre",
-  "Recuperación/Condolencias",
-  "Ramo de flores naturales",
-  "Peluches de apego",
-];
+import { Trash2, Pencil, Plus, X, ArrowLeft } from "lucide-react";
 
 const emptyForm = {
   id: null,
   slug: "",
   name: "",
-  category: CATEGORIES[0],
+  material: "",
+  dimensions: "",
   price: "",
-  bullets: "",
   available: true,
-  image: "",
+  photo: "",
 };
 
-export default function AdminPage() {
-  const [productos, setProductos] = useState([]);
+export default function AdminEmpaquesPage() {
+  const [empaques, setEmpaques] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
   const [showForm, setShowForm] = useState(false);
@@ -35,18 +24,18 @@ export default function AdminPage() {
   const [uploadingImg, setUploadingImg] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const loadProductos = () => {
+  const loadEmpaques = () => {
     setLoading(true);
-    fetch("/api/admin/productos")
+    fetch("/api/admin/empaques")
       .then((res) => res.json())
       .then((data) => {
-        setProductos(data.productos || []);
+        setEmpaques(data.empaques || []);
         setLoading(false);
       });
   };
 
   useEffect(() => {
-    loadProductos();
+    loadEmpaques();
   }, []);
 
   const openNewForm = () => {
@@ -55,16 +44,16 @@ export default function AdminPage() {
     setErrorMsg("");
   };
 
-  const openEditForm = (p) => {
+  const openEditForm = (e) => {
     setForm({
-      id: p.id,
-      slug: p.slug,
-      name: p.name,
-      category: p.category,
-      price: p.price || "",
-      bullets: (p.bullets || []).join(", "),
-      available: p.available,
-      image: p.image || "",
+      id: e.id,
+      slug: e.slug,
+      name: e.name,
+      material: e.material,
+      dimensions: e.dimensions,
+      price: e.price || "",
+      available: e.available,
+      photo: e.photo || "",
     });
     setShowForm(true);
     setErrorMsg("");
@@ -81,7 +70,7 @@ export default function AdminPage() {
     setUploadingImg(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("slug", form.slug);
+    formData.append("slug", `empaque-${form.slug}`);
 
     const res = await fetch("/api/admin/subir-imagen", {
       method: "POST",
@@ -91,7 +80,7 @@ export default function AdminPage() {
     setUploadingImg(false);
 
     if (data.url) {
-      setForm((f) => ({ ...f, image: data.url }));
+      setForm((f) => ({ ...f, photo: data.url }));
     } else {
       setErrorMsg(data.error || "Error subiendo la imagen");
     }
@@ -105,17 +94,14 @@ export default function AdminPage() {
     const payload = {
       slug: form.slug.trim(),
       name: form.name.trim(),
-      category: form.category,
-      price: form.price ? parseInt(form.price, 10) : null,
-      bullets: form.bullets
-        .split(",")
-        .map((b) => b.trim())
-        .filter(Boolean),
+      material: form.material.trim(),
+      dimensions: form.dimensions.trim(),
+      price: form.price,
       available: form.available,
-      image: form.image || null,
+      photo: form.photo,
     };
 
-    const url = form.id ? `/api/admin/productos/${form.id}` : "/api/admin/productos";
+    const url = form.id ? `/api/admin/empaques/${form.id}` : "/api/admin/empaques";
     const method = form.id ? "PUT" : "POST";
 
     const res = await fetch(url, {
@@ -128,26 +114,26 @@ export default function AdminPage() {
 
     if (res.ok) {
       setShowForm(false);
-      loadProductos();
+      loadEmpaques();
     } else {
-      setErrorMsg(data.error || "Error guardando el producto");
+      setErrorMsg(data.error || "Error guardando el empaque");
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("¿Seguro que quieres borrar este producto?")) return;
-    await fetch(`/api/admin/productos/${id}`, { method: "DELETE" });
-    loadProductos();
+    if (!confirm("¿Seguro que quieres borrar este empaque?")) return;
+    await fetch(`/api/admin/empaques/${id}`, { method: "DELETE" });
+    loadEmpaques();
   };
 
   return (
     <div style={{ fontFamily: "'Marcellus', serif", minHeight: "100vh", background: "#F4EAE1", padding: "40px 5vw" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <div style={{ display: "flex", gap: 16, marginBottom: 20 }}>
-  <Link href="/admin/empaques" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Ir a Empaques →</Link>
-</div>
-<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26 }}>
-  <h1 style={{ fontSize: 24, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>Productos</h1>
+        <Link href="/admin" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#927A5D", textDecoration: "none", fontSize: 13, marginBottom: 20 }}>
+          <ArrowLeft size={14} /> Volver a Productos
+        </Link>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26 }}>
+          <h1 style={{ fontSize: 24, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>Empaques</h1>
           <button
             onClick={openNewForm}
             style={{
@@ -164,7 +150,7 @@ export default function AdminPage() {
               cursor: "pointer",
             }}
           >
-            <Plus size={16} /> Nuevo producto
+            <Plus size={16} /> Nuevo empaque
           </button>
         </div>
 
@@ -172,9 +158,9 @@ export default function AdminPage() {
           <p style={{ color: "#927A5D" }}>Cargando...</p>
         ) : (
           <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden" }}>
-            {productos.map((p) => (
+            {empaques.map((e) => (
               <div
-                key={p.id}
+                key={e.id}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -184,25 +170,23 @@ export default function AdminPage() {
                 }}
               >
                 <div style={{ width: 44, height: 44, borderRadius: 8, overflow: "hidden", background: "#F4E2DF", flexShrink: 0 }}>
-                  {(p.image || `/productos/${p.slug}-1.jpg`) && (
-                    <img
-                      src={p.image || `/productos/${p.slug}-1.jpg`}
-                      alt={p.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      onError={(e) => (e.target.style.display = "none")}
-                    />
-                  )}
+                  <img
+                    src={e.photo?.startsWith("http") ? e.photo : `/empaques/${e.photo}.jpg`}
+                    alt={e.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    onError={(ev) => (ev.target.style.display = "none")}
+                  />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontSize: 14.5, color: "#4A3A2C" }}>{p.name}</p>
+                  <p style={{ margin: 0, fontSize: 14.5, color: "#4A3A2C" }}>{e.name}</p>
                   <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
-                    {p.category} · ${Number(p.price).toLocaleString("es-CO")} · {p.available ? "Disponible" : "No disponible"}
+                    {e.material} · {e.dimensions} · ${Number(e.price).toLocaleString("es-CO")} · {e.available ? "Disponible" : "No disponible"}
                   </p>
                 </div>
-                <button onClick={() => openEditForm(p)} style={iconBtnStyle}>
+                <button onClick={() => openEditForm(e)} style={iconBtnStyle}>
                   <Pencil size={16} />
                 </button>
-                <button onClick={() => handleDelete(p.id)} style={{ ...iconBtnStyle, color: "#A23B3B" }}>
+                <button onClick={() => handleDelete(e.id)} style={{ ...iconBtnStyle, color: "#A23B3B" }}>
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -237,7 +221,7 @@ export default function AdminPage() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
               <h2 style={{ fontSize: 18, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>
-                {form.id ? "Editar producto" : "Nuevo producto"}
+                {form.id ? "Editar empaque" : "Nuevo empaque"}
               </h2>
               <button type="button" onClick={() => setShowForm(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#927A5D" }}>
                 <X size={20} />
@@ -255,7 +239,7 @@ export default function AdminPage() {
               style={inputStyle}
               value={form.slug}
               onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              placeholder="ej: primavera2"
+              placeholder="ej: caja-mediana"
               required
             />
 
@@ -267,16 +251,23 @@ export default function AdminPage() {
               required
             />
 
-            <label style={labelStyle}>Categoría</label>
-            <select
+            <label style={labelStyle}>Material</label>
+            <input
               style={inputStyle}
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+              value={form.material}
+              onChange={(e) => setForm({ ...form, material: e.target.value })}
+              placeholder="ej: Madera natural"
+              required
+            />
+
+            <label style={labelStyle}>Dimensiones</label>
+            <input
+              style={inputStyle}
+              value={form.dimensions}
+              onChange={(e) => setForm({ ...form, dimensions: e.target.value })}
+              placeholder="ej: 20x15x10 cm"
+              required
+            />
 
             <label style={labelStyle}>Precio (COP)</label>
             <input
@@ -284,22 +275,15 @@ export default function AdminPage() {
               type="number"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
-              placeholder="139000"
-            />
-
-            <label style={labelStyle}>Bullets (separados por coma)</label>
-            <textarea
-              style={{ ...inputStyle, minHeight: 70 }}
-              value={form.bullets}
-              onChange={(e) => setForm({ ...form, bullets: e.target.value })}
-              placeholder="Vela aromática artesanal, Taza de cerámica, ..."
+              placeholder="45000"
+              required
             />
 
             <label style={labelStyle}>Foto</label>
             <input type="file" accept="image/*" onChange={handleImageUpload} style={{ marginBottom: 8 }} />
             {uploadingImg && <p style={{ fontSize: 12, color: "#927A5D" }}>Subiendo imagen...</p>}
-            {form.image && (
-              <img src={form.image} alt="preview" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, marginBottom: 10 }} />
+            {form.photo && form.photo.startsWith("http") && (
+              <img src={form.photo} alt="preview" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, marginBottom: 10 }} />
             )}
 
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#4A3A2C", marginBottom: 20, marginTop: 6 }}>
