@@ -1,0 +1,20 @@
+import { NextResponse } from "next/server";
+
+export async function POST(request) {
+  const { password } = await request.json();
+
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json({ error: "Contraseña incorrecta" }, { status: 401 });
+  }
+
+  const response = NextResponse.json({ success: true });
+  response.cookies.set("admin_session", process.env.ADMIN_PASSWORD, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7, // 7 días
+    path: "/",
+  });
+
+  return response;
+}
