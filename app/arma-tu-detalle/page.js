@@ -43,9 +43,10 @@ function PackagingPhoto({ photo, alt, label }) {
   if (error) {
     return <ImageBox label={label} />;
   }
+  const src = photo?.startsWith("http") ? photo : `/empaques/${photo}.jpg`;
   return (
     <div className="packaging-photo-frame">
-      <img src={`/empaques/${photo}.jpg`} alt={alt} onError={() => setError(true)} />
+      <img src={src} alt={alt} onError={() => setError(true)} />
     </div>
   );
 }
@@ -199,16 +200,16 @@ const [menuOpen, setMenuOpen] = useState(false);
   }, []);
 
    const handleChoosePackaging = (pkg) => {
-    addItem({
-      slug: pkg.slug,
-      name: pkg.name,
-      priceLabel: pkg.priceLabel,
-      price: pkg.price,
-            image: `/empaques/${pkg.photo}.jpg`,
-      type: "empaque",
-      qty: 1,
-    });
-  };
+  addItem({
+    slug: pkg.slug,
+    name: pkg.name,
+    priceLabel: pkg.priceLabel,
+    price: pkg.price,
+    image: pkg.photo?.startsWith("http") ? pkg.photo : `/empaques/${pkg.photo}.jpg`,
+    type: "empaque",
+    qty: 1,
+  });
+};
 
   const isPackagingTab = activeTab === "Empaques";
     const filteredArmaItems = armaItems.filter((item) => item.category === activeTab);
