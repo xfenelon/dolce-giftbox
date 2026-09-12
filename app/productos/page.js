@@ -26,14 +26,14 @@ function ImageBox({ ratio = "1 / 1", label = "Imagen pendiente" }) {
     </div>
   );
 }
-function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen pendiente", packagingPhoto }) {
+function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen pendiente", packagingPhoto, image }) {
   const [error, setError] = useState(false);
   if (error) {
     return <ImageBox ratio={ratio} label={label} />;
   }
   return (
     <div className="product-photo-frame" style={{ aspectRatio: ratio }}>
-      <img src={`/productos/${slug}-${index}.jpg`} alt={alt} onError={() => setError(true)} />
+      <img src={image || `/productos/${slug}-${index}.jpg`} alt={alt} onError={() => setError(true)} />
       {packagingPhoto && (
         <img src={`/empaques/${packagingPhoto}.jpg`} alt="Empaque" className="packaging-badge" />
       )}
@@ -432,7 +432,7 @@ const { totalCount } = useCart();
           {pageProducts.map((p) => (
                                  <Link href={`/productos/${p.slug}`} className={`product-card ${p.available === false ? "unavailable" : ""}`} key={p.slug}>
               <div className="product-card-photo-wrap">
-                <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} packagingPhoto={p.packaging?.photo} />
+                <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} packagingPhoto={p.packaging?.photo} image={p.image} />
                 {p.available === false && <span className="product-agotado-badge">Agotado</span>}
               </div>
               <h3>{p.name}</h3>
