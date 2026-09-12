@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, Pencil, Plus, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
   "Bebé",
@@ -28,6 +29,7 @@ const emptyForm = {
 
 export default function AdminPage() {
   const [productos, setProductos] = useState([]);
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
   const [showForm, setShowForm] = useState(false);
@@ -139,6 +141,11 @@ export default function AdminPage() {
     await fetch(`/api/admin/productos/${id}`, { method: "DELETE" });
     loadProductos();
   };
+  
+  const handleLogout = async () => {
+    await fetch("/api/admin-logout", { method: "POST" });
+    router.push("/admin/login");
+  };
 
   return (
     <div style={{ fontFamily: "'Marcellus', serif", minHeight: "100vh", background: "#F4EAE1", padding: "40px 5vw" }}>
@@ -150,8 +157,15 @@ export default function AdminPage() {
 </div>
 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26 }}>
   <h1 style={{ fontSize: 24, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>Productos</h1>
-          <button
-            onClick={openNewForm}
+  <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+    <button
+      onClick={handleLogout}
+      style={{ background: "none", border: "none", color: "#A23B3B", fontSize: 13, textDecoration: "underline", cursor: "pointer" }}
+    >
+      Cerrar sesión
+    </button>
+    <button
+      onClick={openNewForm}
             style={{
               display: "flex",
               alignItems: "center",
@@ -166,8 +180,9 @@ export default function AdminPage() {
               cursor: "pointer",
             }}
           >
-            <Plus size={16} /> Nuevo producto
+                        <Plus size={16} /> Nuevo producto
           </button>
+        </div>
         </div>
 
         {loading ? (
