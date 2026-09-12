@@ -51,14 +51,15 @@ function PackagingPhoto({ photo, alt, label }) {
   );
 }
 
-function ArmaItemPhoto({ folder, slug, alt, label }) {
+function ArmaItemPhoto({ folder, slug, alt, label, image }) {
   const [error, setError] = useState(false);
   if (error) {
     return <ImageBox label={label} />;
   }
+  const src = image?.startsWith("http") ? image : `/arma-productos/${folder}/${slug}.jpg`;
   return (
     <div className="packaging-photo-frame">
-      <img src={`/arma-productos/${folder}/${slug}.jpg`} alt={alt} onError={() => setError(true)} />
+      <img src={src} alt={alt} onError={() => setError(true)} />
     </div>
   );
 }
@@ -93,7 +94,7 @@ function ArmaProductCard({ item, addItem, highlighted }) {
       name: item.name,
       priceLabel: item.priceLabel,
       price: item.price,
-            image: `/arma-productos/${item.folder}/${item.slug}.jpg`,
+      image: item.image?.startsWith("http") ? item.image : `/arma-productos/${item.folder}/${item.slug}.jpg`,
       type: "producto",
       qty,
     });
@@ -103,7 +104,7 @@ function ArmaProductCard({ item, addItem, highlighted }) {
   return (
         <div id={`arma-item-${item.slug}`} className={`packaging-card arma-card ${!item.available ? "unavailable" : ""} ${highlighted ? "highlighted" : ""}`}>
       {!item.available && <span className="packaging-badge">Agotado</span>}
-      <ArmaItemPhoto folder={item.folder} slug={item.slug} alt={item.name} label={item.name} />
+      <ArmaItemPhoto folder={item.folder} slug={item.slug} alt={item.name} label={item.name} image={item.image} />
       <h3>{item.name}</h3>
       <p className="arma-desc">{item.description}</p>
       <p className="packaging-price">{item.priceLabel}</p>
