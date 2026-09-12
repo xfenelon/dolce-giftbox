@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, Loader2 } from "lucide-react";
@@ -16,7 +16,7 @@ function formatDate(dateStr) {
   return `${d.getDate()} de ${MONTHS[d.getMonth()]} de ${d.getFullYear()}`;
 }
 
-export default function CheckoutExitoPage() {
+function CheckoutExitoContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("pedido");
 
@@ -71,7 +71,7 @@ export default function CheckoutExitoPage() {
 
       {loading && (
         <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#927A5D" }}>
-          <Loader2 size={18} className="spin" />
+          <Loader2 size={18} />
           Cargando los detalles de tu pedido...
         </div>
       )}
@@ -193,5 +193,13 @@ export default function CheckoutExitoPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutExitoPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh" }} />}>
+      <CheckoutExitoContent />
+    </Suspense>
   );
 }
