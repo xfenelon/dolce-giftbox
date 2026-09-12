@@ -7,7 +7,7 @@ const supabase = createClient(
 );
 
 export async function PUT(request, { params }) {
-  const { id } = params;
+  const { id } = await params;
   const body = await request.json();
   const { slug, name, category, price, bullets, available, image } = body;
 
@@ -34,7 +34,7 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-  const { id } = params;
+  const { id } = await params;
 
   const { error } = await supabase.from("productos").delete().eq("id", id);
 
