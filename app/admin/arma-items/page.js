@@ -4,19 +4,27 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash2, Pencil, Plus, X, ArrowLeft } from "lucide-react";
 
+const CATEGORIES = [
+  "Cuidado personal",
+  "Hogar y ambiente",
+  "Productos comestibles",
+  "Para hombre",
+  "Para bebé",
+];
+
 const emptyForm = {
   id: null,
   slug: "",
   name: "",
-  material: "",
-  dimensions: "",
+  category: CATEGORIES[0],
   price: "",
   available: true,
-  photo: "",
+  description: "",
+  image: "",
 };
 
-export default function AdminEmpaquesPage() {
-  const [empaques, setEmpaques] = useState([]);
+export default function AdminArmaItemsPage() {
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
   const [showForm, setShowForm] = useState(false);
@@ -24,18 +32,18 @@ export default function AdminEmpaquesPage() {
   const [uploadingImg, setUploadingImg] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const loadEmpaques = () => {
+  const loadItems = () => {
     setLoading(true);
-    fetch("/api/admin/empaques")
+    fetch("/api/admin/arma-items")
       .then((res) => res.json())
       .then((data) => {
-        setEmpaques(data.empaques || []);
+        setItems(data.items || []);
         setLoading(false);
       });
   };
 
   useEffect(() => {
-    loadEmpaques();
+    loadItems();
   }, []);
 
   const openNewForm = () => {
@@ -44,16 +52,16 @@ export default function AdminEmpaquesPage() {
     setErrorMsg("");
   };
 
-  const openEditForm = (e) => {
+  const openEditForm = (it) => {
     setForm({
-      id: e.id,
-      slug: e.slug,
-      name: e.name,
-      material: e.material,
-      dimensions: e.dimensions,
-      price: e.price || "",
-      available: e.available,
-      photo: e.photo || "",
+      id: it.id,
+      slug: it.slug,
+      name: it.name,
+      category: it.category,
+      price: it.price || "",
+      available: it.available,
+      description: it.description || "",
+      image: it.image || "",
     });
     setShowForm(true);
     setErrorMsg("");
@@ -70,7 +78,7 @@ export default function AdminEmpaquesPage() {
     setUploadingImg(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("slug", `empaque-${form.slug}`);
+    formData.append("slug", `arma-${form.slug}`);
 
     const res = await fetch("/api/admin/subir-imagen", {
       method: "POST",
@@ -80,7 +88,7 @@ export default function AdminEmpaquesPage() {
     setUploadingImg(false);
 
     if (data.url) {
-      setForm((f) => ({ ...f, photo: data.url }));
+      setForm((f) => ({ ...f, image: data.url }));
     } else {
       setErrorMsg(data.error || "Error subiendo la imagen");
     }
@@ -94,14 +102,14 @@ export default function AdminEmpaquesPage() {
     const payload = {
       slug: form.slug.trim(),
       name: form.name.trim(),
-      material: form.material.trim(),
-      dimensions: form.dimensions.trim(),
+      category: form.category,
       price: form.price,
       available: form.available,
-      photo: form.photo,
+      description: form.description.trim(),
+      image: form.image,
     };
 
-    const url = form.id ? `/api/admin/empaques/${form.id}` : "/api/admin/empaques";
+    const url = form.id ? `/api/admin/arma-items/${form.id}` : "/api/admin/arma-items";
     const method = form.id ? "PUT" : "POST";
 
     const res = await fetch(url, {
@@ -114,29 +122,27 @@ export default function AdminEmpaquesPage() {
 
     if (res.ok) {
       setShowForm(false);
-      loadEmpaques();
+      loadItems();
     } else {
-      setErrorMsg(data.error || "Error guardando el empaque");
+      setErrorMsg(data.error || "Error guardando el producto");
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("¿Seguro que quieres borrar este empaque?")) return;
-    await fetch(`/api/admin/empaques/${id}`, { method: "DELETE" });
-    loadEmpaques();
+    if (!confirm("¿Seguro que quieres borrar este producto?")) return;
+    await fetch(`/api/admin/arma-items/${id}`, { method: "DELETE" });
+    loadItems();
   };
 
   return (
     <div style={{ fontFamily: "'Marcellus', serif", minHeight: "100vh", background: "#F4EAE1", padding: "40px 5vw" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <div style={{ display: "flex", gap: 16, marginBottom: 20, alignItems: "center" }}>
-  <Link href="/admin" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#927A5D", textDecoration: "none", fontSize: 13 }}>
-    <ArrowLeft size={14} /> Productos
-  </Link>
-  <Link href="/admin/arma-items" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Arma tu detalle</Link>
-</div>
+        <div style={{ display: "flex", gap: 16, marginBottom: 20 }}>
+          <Link href="/admin" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Productos</Link>
+          <Link href="/admin/empaques" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Empaques</Link>
+        </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26 }}>
-          <h1 style={{ fontSize: 24, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>Empaques</h1>
+          <h1 style={{ fontSize: 24, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>Arma tu detalle — Artículos</h1>
           <button
             onClick={openNewForm}
             style={{
@@ -153,7 +159,7 @@ export default function AdminEmpaquesPage() {
               cursor: "pointer",
             }}
           >
-            <Plus size={16} /> Nuevo empaque
+            <Plus size={16} /> Nuevo artículo
           </button>
         </div>
 
@@ -161,9 +167,9 @@ export default function AdminEmpaquesPage() {
           <p style={{ color: "#927A5D" }}>Cargando...</p>
         ) : (
           <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden" }}>
-            {empaques.map((e) => (
+            {items.map((it) => (
               <div
-                key={e.id}
+                key={it.id}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -174,22 +180,22 @@ export default function AdminEmpaquesPage() {
               >
                 <div style={{ width: 44, height: 44, borderRadius: 8, overflow: "hidden", background: "#F4E2DF", flexShrink: 0 }}>
                   <img
-                    src={e.photo?.startsWith("http") ? e.photo : `/empaques/${e.photo}.jpg`}
-                    alt={e.name}
+                    src={it.image || `/arma-productos/${it.folder}/${it.slug}.jpg`}
+                    alt={it.name}
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     onError={(ev) => (ev.target.style.display = "none")}
                   />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontSize: 14.5, color: "#4A3A2C" }}>{e.name}</p>
+                  <p style={{ margin: 0, fontSize: 14.5, color: "#4A3A2C" }}>{it.name}</p>
                   <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
-                    {e.material} · {e.dimensions} · ${Number(e.price).toLocaleString("es-CO")} · {e.available ? "Disponible" : "No disponible"}
+                    {it.category} · ${Number(it.price).toLocaleString("es-CO")} · {it.available ? "Disponible" : "No disponible"}
                   </p>
                 </div>
-                <button onClick={() => openEditForm(e)} style={iconBtnStyle}>
+                <button onClick={() => openEditForm(it)} style={iconBtnStyle}>
                   <Pencil size={16} />
                 </button>
-                <button onClick={() => handleDelete(e.id)} style={{ ...iconBtnStyle, color: "#A23B3B" }}>
+                <button onClick={() => handleDelete(it.id)} style={{ ...iconBtnStyle, color: "#A23B3B" }}>
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -224,7 +230,7 @@ export default function AdminEmpaquesPage() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
               <h2 style={{ fontSize: 18, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>
-                {form.id ? "Editar empaque" : "Nuevo empaque"}
+                {form.id ? "Editar artículo" : "Nuevo artículo"}
               </h2>
               <button type="button" onClick={() => setShowForm(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#927A5D" }}>
                 <X size={20} />
@@ -242,7 +248,7 @@ export default function AdminEmpaquesPage() {
               style={inputStyle}
               value={form.slug}
               onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              placeholder="ej: caja-mediana"
+              placeholder="ej: jabon-lavanda"
               required
             />
 
@@ -254,23 +260,16 @@ export default function AdminEmpaquesPage() {
               required
             />
 
-            <label style={labelStyle}>Material</label>
-            <input
+            <label style={labelStyle}>Categoría</label>
+            <select
               style={inputStyle}
-              value={form.material}
-              onChange={(e) => setForm({ ...form, material: e.target.value })}
-              placeholder="ej: Madera natural"
-              required
-            />
-
-            <label style={labelStyle}>Dimensiones</label>
-            <input
-              style={inputStyle}
-              value={form.dimensions}
-              onChange={(e) => setForm({ ...form, dimensions: e.target.value })}
-              placeholder="ej: 20x15x10 cm"
-              required
-            />
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
 
             <label style={labelStyle}>Precio (COP)</label>
             <input
@@ -278,15 +277,23 @@ export default function AdminEmpaquesPage() {
               type="number"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
-              placeholder="45000"
+              placeholder="25000"
               required
+            />
+
+            <label style={labelStyle}>Descripción</label>
+            <textarea
+              style={{ ...inputStyle, minHeight: 60 }}
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              placeholder="Descripción corta del producto"
             />
 
             <label style={labelStyle}>Foto</label>
             <input type="file" accept="image/*" onChange={handleImageUpload} style={{ marginBottom: 8 }} />
             {uploadingImg && <p style={{ fontSize: 12, color: "#927A5D" }}>Subiendo imagen...</p>}
-            {form.photo && form.photo.startsWith("http") && (
-              <img src={form.photo} alt="preview" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, marginBottom: 10 }} />
+            {form.image && (
+              <img src={form.image} alt="preview" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, marginBottom: 10 }} />
             )}
 
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#4A3A2C", marginBottom: 20, marginTop: 6 }}>
