@@ -65,9 +65,15 @@ function CheckoutExitoContent() {
       <h1 style={{ fontSize: 26, color: "#4A3A2C", fontWeight: 400, margin: "18px 0 6px" }}>
         ¡Pago aprobado!
       </h1>
-      <p style={{ fontSize: 14.5, maxWidth: 420, lineHeight: 1.6, marginBottom: 30 }}>
-        Gracias por tu compra. Ya estamos preparando tu pedido con cariño.
-      </p>
+      <p style={{ fontSize: 14.5, maxWidth: 420, lineHeight: 1.6, marginBottom: 8 }}>
+¡Gracias por tu compra!
+</p>
+<p style={{ fontSize: 14.5, maxWidth: 420, lineHeight: 1.6, marginBottom: 8 }}>
+Te enviamos a tu correo la confirmación de tu pedido y toda la información relacionada con tu compra.
+</p>
+<p style={{ fontSize: 13, maxWidth: 420, lineHeight: 1.6, marginBottom: 30, color: "#BBA083" }}>
+Si no ves el correo en tu bandeja de entrada, revisa también la carpeta de No deseados o Spam.
+</p>
 
       {loading && (
         <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#927A5D" }}>

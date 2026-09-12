@@ -24,19 +24,18 @@ function ImageBox({ ratio = "1 / 1", label = "Imagen pendiente" }) {
   );
 }
 
-function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen pendiente" }) {
+function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen pendiente", image }) {
   const [error, setError] = useState(false);
   if (error) {
     return <ImageBox ratio={ratio} label={label} />;
   }
   return (
     <div className="product-photo-frame" style={{ aspectRatio: ratio }}>
-      <img src={`/productos/${slug}-${index}.jpg`} alt={alt} onError={() => setError(true)} />
+      <img src={image || `/productos/${slug}-${index}.jpg`} alt={alt} onError={() => setError(true)} />
     </div>
   );
 }
-
-function ProductGallery({ slug, name, packaging }) {
+function ProductGallery({ slug, name, packaging, image }) {
   const [active, setActive] = useState(1);
   return (
     <>
@@ -45,7 +44,7 @@ function ProductGallery({ slug, name, packaging }) {
           <img src={`/empaques/${packaging.photo}.jpg`} alt={`Empaque: ${packaging.name}`} />
         </div>
       ) : (
-        <ProductPhoto slug={slug} index={1} alt={`Foto ${name}`} label={`Foto ${name}`} />
+        <ProductPhoto slug={slug} index={1} alt={`Foto ${name}`} label={`Foto ${name}`} image={image} />
       )}
       <div className="pd-thumbs">
         <button
@@ -53,8 +52,9 @@ function ProductGallery({ slug, name, packaging }) {
           onClick={() => setActive(1)}
           aria-label="Ver foto del producto"
         >
-          <ProductPhoto slug={slug} index={1} alt="Foto del producto" label="Foto 1" />
+          <ProductPhoto slug={slug} index={1} alt="Foto del producto" label="Foto 1" image={image} />
         </button>
+
         {packaging && (
           <button
             className={`pd-thumb ${active === 2 ? "active" : ""}`}
@@ -369,7 +369,7 @@ export default function ProductDetailPage({ params }) {
       <section className="pd-section">
        
         <div className="pd-main">
-          <ProductGallery slug={product.slug} name={product.name} packaging={product.packaging} />
+          <ProductGallery slug={product.slug} name={product.name} packaging={product.packaging} image={product.image} />
           <div className="pd-share">
             <a href="#" aria-label="Compartir"><Share2 size={16} /></a>
           </div>
@@ -458,7 +458,7 @@ export default function ProductDetailPage({ params }) {
         <div className="related-grid">
           {related.map((p) => (
             <Link key={p.slug} href={`/productos/${p.slug}`} className="related-card">
-              <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} />
+              <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} image={p.image} />
               <h3>{p.name}</h3>
               <p>{p.priceLabel}</p>
             </Link>
