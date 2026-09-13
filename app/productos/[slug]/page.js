@@ -127,6 +127,7 @@ export default function ProductDetailPage({ params }) {
       name: product.name,
       priceLabel: product.priceLabel,
       price: product.price,
+      category: product.category,
       ribbon: isPeluche ? null : ribbon,
       variant: variant || null,
       customName: customName.trim() || null,

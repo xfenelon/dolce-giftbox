@@ -4,6 +4,8 @@ import React from "react";
 import { X, Minus, Plus, Trash2, MessageCircle } from "lucide-react";
 import { useArmaCart } from "../context/ArmaCartContext";
 
+const FLOWER_SLUGS = ["bouquet-mixto", "bouquet-17-rosas", "bouquet-flores-secas", "tarjeta-mini-bouquet"];
+
 export default function ArmaCartDrawer({ open, onClose }) {
   const { items, removeItem, updateQty, totalCount, totalPrice } = useArmaCart();
 
@@ -11,6 +13,7 @@ export default function ArmaCartDrawer({ open, onClose }) {
 
     const formattedTotal = `$${totalPrice.toLocaleString("es-CO")}`;
   const onlyPackaging = items.length > 0 && items.every((i) => i.type === "empaque");
+  const hasFlowers = items.some((i) => FLOWER_SLUGS.includes(i.slug));
 
   const whatsappMessage = items
     .map((i) => `- ${i.name} x${i.qty}`)
@@ -97,7 +100,10 @@ export default function ArmaCartDrawer({ open, onClose }) {
               <span>Total</span>
               <span>{formattedTotal}</span>
             </div>
-                   <p className="cart-fit-note">Confirmaremos que los productos quepan en el empaque.</p>
+                                  <p className="cart-fit-note">Confirmaremos que los productos quepan en el empaque.</p>
+          {hasFlowers && (
+            <p className="cart-warning">Los ramos de flores naturales solo se pueden enviar a Medellín, Itagüí, Bello, Envigado o Sabaneta.</p>
+          )}
           {onlyPackaging ? (
             <p className="cart-warning">El empaque no se vende solo. Agrega al menos un producto para armar tu caja.</p>
           ) : (

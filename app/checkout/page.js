@@ -11,6 +11,7 @@ const FONT_IMPORT =
 
 // Ciudades donde se entrega al día siguiente. Fuera de estas, va por mensajería (2 a 4 días hábiles).
 const LOCAL_CITIES = ["medellin", "itagui", "envigado", "sabaneta", "bello"];
+const FLOWER_CITIES = ["medellin", "itagui", "envigado", "sabaneta", "bello"];
 
 function normalizeCity(city) {
   return city
@@ -153,6 +154,7 @@ function DeliveryCalendar({ value, onChange, minDate }) {
 
 export default function CheckoutPage() {
   const { items, updateQty, removeItem, totalCount, totalPrice, clearCart } = useCart();
+  const hasFlowers = items.some((i) => i.category === "Ramo de flores naturales");
 
   const [senderName, setSenderName] = useState("");
   const [senderPhone, setSenderPhone] = useState("");
@@ -229,6 +231,10 @@ const validateEmailField = (email, setError) => {
 }
     if (deliveryDate < minDateStr) {
       setErrorMsg("Elige una fecha de entrega válida según la ciudad.");
+      return;
+    }
+        if (hasFlowers && !isLocalCity(city)) {
+      setErrorMsg("Los ramos de flores naturales solo se pueden enviar a Medellín, Itagüí, Bello, Envigado o Sabaneta.");
       return;
     }
 
@@ -504,9 +510,14 @@ const validateEmailField = (email, setError) => {
 
             <p className="co-section-title">Dirección de entrega</p>
             <div className="co-field-row">
-              <div className="co-field">
+                            <div className="co-field">
                 <label>Ciudad</label>
                 <input value={city} onChange={(e) => { setCity(e.target.value); setDeliveryDate(""); }} required />
+                {hasFlowers && (
+                  <span className="co-hint" style={{ color: "#A23B3B" }}>
+                    Tu pedido incluye ramos de flores naturales: solo se pueden enviar a Medellín, Itagüí, Bello, Envigado o Sabaneta.
+                  </span>
+                )}
               </div>
               <div className="co-field">
                 <label>Barrio</label>
