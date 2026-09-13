@@ -37,10 +37,15 @@ export function ProductsProvider({ children }) {
 
       if (!active) return;
 
-      if (productsRes.error) {
+            if (productsRes.error) {
+        console.error("Error cargando productos:", productsRes.error);
         setError(productsRes.error);
         setLoading(false);
         return;
+      }
+
+      if (packagingRes.error) {
+        console.error("Error cargando empaques:", packagingRes.error);
       }
 
         const packagingList = packagingRes.data || [];
