@@ -17,6 +17,22 @@ const CATEGORIES = [
   "Peluches de apego",
 ];
 
+const PACKAGING_OPTIONS = [
+  "",
+  "caja-pequena-madera",
+  "caja-mediana-madera",
+  "caja-grande-madera",
+  "caja-redonda-rosada",
+  "caja-letrero-madera",
+  "corazon-madera-pequena",
+  "corazon-madera-grande",
+  "estrella-madera",
+  "cesta-croche",
+  "canasta-metalica",
+  "bolsa-yute",
+  "bolso-mimbre",
+];
+
 const emptyForm = {
   id: null,
   slug: "",
@@ -26,6 +42,7 @@ const emptyForm = {
   bullets: "",
   available: true,
   image: "",
+  packaging_slug: "",
 };
 
 export default function AdminPage() {
@@ -68,6 +85,7 @@ export default function AdminPage() {
       bullets: (p.bullets || []).join(", "),
       available: p.available,
       image: p.image || "",
+      packaging_slug: p.packaging_slug || "",
     });
     setShowForm(true);
     setErrorMsg("");
@@ -116,6 +134,7 @@ export default function AdminPage() {
         .filter(Boolean),
       available: form.available,
       image: form.image || null,
+      packaging_slug: form.packaging_slug || null,
     };
 
     const url = form.id ? `/api/admin/productos/${form.id}` : "/api/admin/productos";
@@ -312,6 +331,18 @@ export default function AdminPage() {
               onChange={(e) => setForm({ ...form, bullets: e.target.value })}
               placeholder="Vela aromática artesanal, Taza de cerámica, ..."
             />
+
+                        <label style={labelStyle}>Tipo de empaque</label>
+            <select
+              style={inputStyle}
+              value={form.packaging_slug}
+              onChange={(e) => setForm({ ...form, packaging_slug: e.target.value })}
+            >
+              <option value="">Sin empaque asignado</option>
+              {PACKAGING_OPTIONS.filter(Boolean).map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
 
             <label style={labelStyle}>Foto</label>
             <input type="file" accept="image/*" onChange={handleImageUpload} style={{ marginBottom: 8 }} />
