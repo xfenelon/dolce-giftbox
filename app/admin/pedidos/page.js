@@ -192,12 +192,53 @@ export default function AdminPedidosPage() {
               </button>
             </div>
 
+                       <p style={{ fontSize: 13, color: "#927A5D", marginBottom: 4 }}>
+              {editing.sender_name} ({editing.sender_phone}) → {editing.recipient_name} ({editing.recipient_phone})
+            </p>
             <p style={{ fontSize: 13, color: "#927A5D", marginBottom: 4 }}>
-              {editing.sender_name} → {editing.recipient_name}
+              {editing.address}
+              {editing.unit_name ? `, ${editing.unit_name}` : ""}
+              {editing.house_number ? `, casa/apto ${editing.house_number}` : ""}
+              , {editing.neighborhood}, {editing.city}
             </p>
-            <p style={{ fontSize: 13, color: "#927A5D", marginBottom: 20 }}>
-              {editing.address}, {editing.neighborhood}, {editing.city}
+            <p style={{ fontSize: 13, color: "#927A5D", marginBottom: 16 }}>
+              Fecha de entrega: {editing.delivery_date} · Total: {formatMoney(editing.total)}
             </p>
+
+            <div style={{ background: "#F4EAE1", borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
+              <p style={{ fontSize: 11.5, textTransform: "uppercase", letterSpacing: 0.5, color: "#4A3A2C", margin: "0 0 8px" }}>
+                Productos
+              </p>
+              {(editing.items || []).map((item, i) => (
+                <p key={i} style={{ fontSize: 13, color: "#4A3A2C", margin: "0 0 4px" }}>
+                  • {item.name}
+                  {item.ribbon ? ` (Listón: ${item.ribbon})` : ""}
+                  {item.variant ? ` (${item.variant})` : ""}
+                  {item.customName ? ` — Nombre: "${item.customName}"` : ""}
+                  {" "}x{item.qty}
+                </p>
+              ))}
+            </div>
+
+            {editing.card_message && (
+              <div style={{ background: "#F4E2DF", borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
+                <p style={{ fontSize: 11.5, textTransform: "uppercase", letterSpacing: 0.5, color: "#4A3A2C", margin: "0 0 8px" }}>
+                  Carta de regalo
+                </p>
+                {!editing.card_anonymous && editing.card_from && (
+                  <p style={{ fontSize: 12.5, color: "#927A5D", margin: "0 0 4px" }}>De: {editing.card_from}</p>
+                )}
+                {editing.card_to && (
+                  <p style={{ fontSize: 12.5, color: "#927A5D", margin: "0 0 4px" }}>Para: {editing.card_to}</p>
+                )}
+                {editing.card_anonymous && (
+                  <p style={{ fontSize: 12.5, color: "#927A5D", margin: "0 0 4px", fontStyle: "italic" }}>Envío anónimo</p>
+                )}
+                <p style={{ fontSize: 13.5, color: "#4A3A2C", margin: "8px 0 0", lineHeight: 1.5 }}>
+                  "{editing.card_message}"
+                </p>
+              </div>
+            )}
 
             <label style={labelStyle}>Estado del pedido</label>
             <select
