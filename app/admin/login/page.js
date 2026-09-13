@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabase";
+import { supabaseAuth } from "../../lib/supabaseAuth";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ export default function AdminLoginPage() {
     setError("");
     setLoading(true);
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
+       const { error: authError } = await supabaseAuth.auth.signInWithPassword({
       email,
       password,
     });
