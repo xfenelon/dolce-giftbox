@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Trash2, Pencil, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { supabase } from "../lib/supabase";
 
 const CATEGORIES = [
   "Bebé",
@@ -142,8 +143,8 @@ export default function AdminPage() {
     loadProductos();
   };
   
-  const handleLogout = async () => {
-    await fetch("/api/admin-logout", { method: "POST" });
+   const handleLogout = async () => {
+    await supabase.auth.signOut();
     router.push("/admin/login");
   };
 

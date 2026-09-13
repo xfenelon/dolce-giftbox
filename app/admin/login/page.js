@@ -2,8 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabase";
 
 export default function AdminLoginPage() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,19 +16,18 @@ export default function AdminLoginPage() {
     setError("");
     setLoading(true);
 
-    const res = await fetch("/api/admin-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
 
     setLoading(false);
 
-    if (res.ok) {
+    if (authError) {
+      setError("Correo o contraseña incorrectos.");
+    } else {
       router.push("/admin");
       router.refresh();
-    } else {
-      setError("Contraseña incorrecta.");
     }
   };
 
@@ -55,11 +56,26 @@ export default function AdminLoginPage() {
           Panel de Dolce Giftbox
         </h1>
         <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Correo"
+          autoFocus
+          style={{
+            width: "100%",
+            padding: "12px 14px",
+            border: "1px solid #CEBAA7",
+            borderRadius: 8,
+            fontSize: 14,
+            marginBottom: 10,
+            fontFamily: "'Marcellus', serif",
+          }}
+        />
+        <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Contraseña"
-          autoFocus
           style={{
             width: "100%",
             padding: "12px 14px",
