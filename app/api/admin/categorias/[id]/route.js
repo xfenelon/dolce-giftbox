@@ -9,8 +9,8 @@ const supabase = createClient(
 export async function PUT(request, { params }) {
   const { id } = await params;
   const body = await request.json();
-  const { name, description, photo_slug, sort_order } = body;
-  const newName = name.trim();
+    const { name, description, photo_slug, sort_order } = body;
+  const newName = name.trim().normalize("NFC");
 
   const { data: oldCategoria, error: fetchError } = await supabase
     .from("categorias")
@@ -22,7 +22,7 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ error: fetchError.message }, { status: 500 });
   }
 
-  const oldName = oldCategoria.name;
+    const oldName = oldCategoria.name.normalize("NFC");
 
   const { data, error } = await supabase
     .from("categorias")

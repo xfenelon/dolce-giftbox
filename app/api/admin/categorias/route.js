@@ -21,7 +21,7 @@ export async function GET() {
 
 export async function POST(request) {
   const body = await request.json();
-  const { name, description, photo_slug, sort_order } = body;
+   const { name, description, photo_slug, sort_order } = body;
 
   if (!name) {
     return NextResponse.json({ error: "El nombre es obligatorio" }, { status: 400 });
@@ -30,7 +30,7 @@ export async function POST(request) {
   const { data, error } = await supabase
     .from("categorias")
     .insert({
-      name: name.trim(),
+      name: name.trim().normalize("NFC"),
       description: description || null,
       photo_slug: photo_slug || null,
       sort_order: sort_order || 0,
