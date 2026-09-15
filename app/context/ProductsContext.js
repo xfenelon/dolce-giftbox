@@ -22,20 +22,27 @@ const CUSTOM_NAME_LABEL_BY_SLUG = {
 const ProductsContext = createContext(null);
 
 export function ProductsProvider({ children }) {
-  const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [categoryCards, setCategoryCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
     useEffect(() => {
     let active = true;
 
-    async function loadData() {
-      const [productsRes, packagingRes] = await Promise.all([
+       async function loadData() {
+      const [productsRes, packagingRes, categoriesRes] = await Promise.all([
         supabase.from("productos").select("*").order("id"),
         supabase.from("empaques").select("*").order("id"),
+        supabase.from("categorias").select("*").order("sort_order"),
       ]);
 
       if (!active) return;
+
+      if (categoriesRes.error) {
+        console.error("Error cargando categorias:", categoriesRes.error);
+      }
 
             if (productsRes.error) {
         console.error("Error cargando productos:", productsRes.error);
@@ -62,7 +69,15 @@ export function ProductsProvider({ children }) {
         customNameLabel: CUSTOM_NAME_LABEL_BY_SLUG[p.slug] || null,
       }));
 
-      setProducts(enriched);
+            setProducts(enriched);
+      setCategories((categoriesRes.data || []).map((c) => c.name));
+      setCategoryCards(
+        (categoriesRes.data || []).map((c) => ({
+          title: c.name,
+          desc: c.description,
+          photoSlug: c.photo_slug,
+        }))
+      );
       setLoading(false);
     }
 
@@ -89,9 +104,9 @@ export function ProductsProvider({ children }) {
     return products.filter((p) => p.category === category);
   };
 
-  return (
+    return (
     <ProductsContext.Provider
-      value={{ products, loading, error, getProductBySlug, getRelatedProducts, getProductsByCategory }}
+      value={{ products, categories, categoryCards, loading, error, getProductBySlug, getRelatedProducts, getProductsByCategory }}
     >
       {children}
     </ProductsContext.Provider>
