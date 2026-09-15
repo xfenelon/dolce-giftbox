@@ -88,8 +88,8 @@ function ProductosPageContent() {
   const [scrolled, setScrolled] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-const { totalCount } = useCart();
-  c  const { products, categories, loading: productsLoading } = useProducts();
+  const { totalCount } = useCart();
+  const { products, categories, loading: productsLoading } = useProducts();
   const [searchOpen, setSearchOpen] = useState(false);
   const [sort, setSort] = useState(null);
   const searchParams = useSearchParams();
