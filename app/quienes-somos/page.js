@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { CATEGORIES } from "../data/products";
+import { useProducts } from "../context/ProductsContext";
 import CartDrawer from "../components/CartDrawer";
 import CartToast from "../components/CartToast";
 import { useCart } from "../context/CartContext";
@@ -39,6 +39,7 @@ function StoryPhoto({ index, alt, label, className = "" }) {
 }
 
 export default function QuienesSomosPage() {
+ const { categories } = useProducts();
  const [menuOpen, setMenuOpen] = useState(false);
   const [dudasOpen, setDudasOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
@@ -168,7 +169,7 @@ const { totalCount } = useCart();
             <li className="nav-dropdown">
               <Link href="/productos">Detalles prediseñados</Link>
               <div className="dropdown-menu">
-               {CATEGORIES.map((cat) => (
+                             {categories.map((cat) => (
                   <Link key={cat} href={`/productos?categoria=${encodeURIComponent(cat)}`}>{cat}</Link>
                 ))}
                 <Link href="/productos" className="dropdown-all">Todos</Link>

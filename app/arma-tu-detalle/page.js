@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { CATEGORIES } from "../data/products";
+import { useProducts } from "../context/ProductsContext";
 import { useSearchParams } from "next/navigation";
 import ArmaCartDrawer from "../components/ArmaCartDrawer";
 import ArmaCartToast from "../components/ArmaCartToast";
@@ -169,6 +169,7 @@ const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
     const { totalCount, addItem } = useArmaCart();
+      const { categories } = useProducts();
      const [packaging, setPackaging] = useState([]);
   const { armaItems, loading: armaItemsLoading } = useArmaItems();
   const [highlightedSlug, setHighlightedSlug] = useState(productoFromUrl || null);
@@ -373,7 +374,7 @@ const [menuOpen, setMenuOpen] = useState(false);
             <li className="nav-dropdown">
               <Link href="/productos">Detalles prediseñados</Link>
               <div className="dropdown-menu">
-                {CATEGORIES.map((cat) => (
+                               {categories.map((cat) => (
                   <Link key={cat} href={`/productos?categoria=${encodeURIComponent(cat)}`}>{cat}</Link>
                 ))}
                 <Link href="/productos" className="dropdown-all">Todos</Link>

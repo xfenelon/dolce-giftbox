@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
-import { CATEGORIES } from "../../data/products";
+
 import CartDrawer from "../../components/CartDrawer";
 import CartToast from "../../components/CartToast";
 import { useCart } from "../../context/CartContext";
@@ -72,7 +72,7 @@ function ProductGallery({ slug, name, packaging, image }) {
 }
 export default function ProductDetailPage({ params }) {
     const { slug } = React.use(params);
-  const { getProductBySlug, getRelatedProducts, loading: productsLoading } = useProducts();
+   const { categories, getProductBySlug, getRelatedProducts, loading: productsLoading } = useProducts();
   const product = getProductBySlug(slug);
   const related = getRelatedProducts(slug, 4);
 
@@ -307,7 +307,7 @@ export default function ProductDetailPage({ params }) {
             <li className="nav-dropdown">
               <Link href="/productos">Detalles prediseñados</Link>
               <div className="dropdown-menu">
-                {CATEGORIES.map((cat) => (
+                               {categories.map((cat) => (
                   <Link key={cat} href={`/productos?categoria=${encodeURIComponent(cat)}`}>{cat}</Link>
                 ))}
                 <Link href="/productos" className="dropdown-all">Todos</Link>

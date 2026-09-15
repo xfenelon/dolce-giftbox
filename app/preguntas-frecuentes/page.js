@@ -6,7 +6,7 @@ import CartDrawer from "../components/CartDrawer";
 import CartToast from "../components/CartToast";
 import SearchOverlay from "../components/SearchOverlay";
 import { useCart } from "../context/CartContext";
-import { CATEGORIES } from "../data/products";
+import { useProducts } from "../context/ProductsContext";
 import {
   ShoppingBag, Menu, X, Search, User, MessageCircle, AtSign, ChevronDown,
 } from "lucide-react";
@@ -75,6 +75,7 @@ function FaqItem({ q, a }) {
 }
 
 export default function PreguntasFrecuentesPage() {
+ const { categories } = useProducts();
  const [menuOpen, setMenuOpen] = useState(false);
   const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -204,7 +205,7 @@ export default function PreguntasFrecuentesPage() {
             <li className="nav-dropdown">
               <Link href="/productos">Detalles prediseñados</Link>
               <div className="dropdown-menu">
-                {CATEGORIES.map((cat) => (
+                                {categories.map((cat) => (
                   <Link key={cat} href={`/productos?categoria=${encodeURIComponent(cat)}`}>{cat}</Link>
                 ))}
                 <Link href="/productos" className="dropdown-all">Todos</Link>

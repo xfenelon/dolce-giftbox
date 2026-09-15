@@ -6,7 +6,6 @@ import {
   ShoppingBag, Menu, X, Search, User, ChevronLeft, ChevronRight,
   ImageIcon, AtSign, MessageCircle, SlidersHorizontal, ChevronDown,
 } from "lucide-react";
-import { CATEGORIES } from "../data/products";
 import { useProducts } from "../context/ProductsContext";
 import CartDrawer from "../components/CartDrawer";
 import CartToast from "../components/CartToast";
@@ -90,7 +89,7 @@ function ProductosPageContent() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 const { totalCount } = useCart();
-  const { products, loading: productsLoading } = useProducts();
+  c  const { products, categories, loading: productsLoading } = useProducts();
   const [searchOpen, setSearchOpen] = useState(false);
   const [sort, setSort] = useState(null);
   const searchParams = useSearchParams();
