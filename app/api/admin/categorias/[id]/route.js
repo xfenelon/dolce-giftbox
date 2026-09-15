@@ -40,15 +40,23 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+   console.log("DEBUG oldName:", JSON.stringify(oldName));
+  console.log("DEBUG newName:", JSON.stringify(newName));
+
   if (oldName !== newName) {
-    const { error: cascadeError } = await supabase
+    const { data: cascadeData, error: cascadeError, count } = await supabase
       .from("productos")
       .update({ category: newName })
-      .eq("category", oldName);
+      .eq("category", oldName)
+      .select();
+
+    console.log("DEBUG productos actualizados:", cascadeData?.length, cascadeData);
 
     if (cascadeError) {
       console.error("Error actualizando productos con la categoria renombrada:", cascadeError);
     }
+  } else {
+    console.log("DEBUG: oldName y newName son iguales, no se hizo cascada");
   }
 
   return NextResponse.json({ categoria: data });
