@@ -311,8 +311,8 @@ function ProductosPageContent() {
             <li><Link href="/">Inicio</Link></li>
             <li className="nav-dropdown">
               <Link href="/productos">Detalles prediseñados</Link>
-              <div className="dropdown-menu">
-               {CATEGORIES.map((cat) => (
+                            <div className="dropdown-menu">
+               {categories.map((cat) => (
                   <Link key={cat} href={`/productos?categoria=${encodeURIComponent(cat)}`}>{cat}</Link>
                 ))}
                 <Link href="/productos" className="dropdown-all">Todos</Link>
@@ -393,7 +393,7 @@ function ProductosPageContent() {
   >
     Todos los productos
   </span>
-  {CATEGORIES.map((c) => (
+  {categories.map((c) => (
     <span
       key={c}
       className={`cat-link ${category === c ? "active" : ""}`}
