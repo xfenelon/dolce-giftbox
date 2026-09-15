@@ -174,6 +174,7 @@ export default function AdminPage() {
   <Link href="/admin/empaques" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Empaques</Link>
   <Link href="/admin/arma-items" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Arma tu detalle</Link>
   <Link href="/admin/pedidos" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Pedidos</Link>
+  <Link href="/admin/categorias" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Categorías</Link>
 </div>
 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26 }}>
   <h1 style={{ fontSize: 24, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>Productos</h1>

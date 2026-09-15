@@ -75,10 +75,11 @@ export default function AdminPedidosPage() {
     <div style={{ fontFamily: "'Marcellus', serif", minHeight: "100vh", background: "#F4EAE1", padding: "40px 5vw" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", gap: 16, marginBottom: 20 }}>
-          <Link href="/admin" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Productos</Link>
-          <Link href="/admin/empaques" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Empaques</Link>
-          <Link href="/admin/arma-items" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Arma tu detalle</Link>
-        </div>
+  <Link href="/admin" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Productos</Link>
+  <Link href="/admin/empaques" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Empaques</Link>
+  <Link href="/admin/arma-items" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Arma tu detalle</Link>
+  <Link href="/admin/categorias" style={{ color: "#927A5D", fontSize: 13, textDecoration: "underline" }}>Categorías</Link>
+</div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
           <h1 style={{ fontSize: 24, color: "#4A3A2C", fontWeight: 400, margin: 0 }}>Pedidos</h1>
