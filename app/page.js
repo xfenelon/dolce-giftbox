@@ -6,7 +6,8 @@ import CartDrawer from "./components/CartDrawer";
 import CartToast from "./components/CartToast";
 import SearchOverlay from "./components/SearchOverlay";
 import { useCart } from "./context/CartContext";
-import { getProductBySlug, CATEGORIES as PRODUCT_CATEGORIES } from "./data/products";
+import { getProductBySlug } from "./data/products";
+import { useProducts } from "./context/ProductsContext";
 import {
   ShoppingBag, Menu, X, Search, User, ChevronLeft, ChevronRight, ChevronDown,
   ImageIcon, AtSign, Minus, Plus, MessageCircle, Share2,
@@ -211,15 +212,7 @@ const STEPS = [
   { text: "Recibe el detalle", icon: "recibe-detalle" },
 ];
 
-const CATEGORIES = [
-  { title: "Bebé", desc: "Perfectos para baby showers y bienvenida a bebés", photoSlug: "alicia" },
-  { title: "Cumpleaños mujer", desc: "Sorprende en grande en su día especial", photoSlug: "gratitude" },
-  { title: "Cumpleaños hombre", desc: "Un detalle para celebrarlo por todo lo alto", photoSlug: "classic" },
-  { title: "Para mujer", desc: "Alegra el día de esa mujer tan especial", photoSlug: "bianca" },
-  { title: "Para hombre", desc: "Un hermoso detalle para ese hombre especial en tu vida", photoSlug: "luna" },
-  { title: "Recuperación/Condolencias", desc: "Acompaña con cariño en momentos difíciles", photoSlug: "bienestar" },
-  { title: "Ramo de flores naturales", desc: "Ramos frescos de exportación para cualquier ocasión", photoSlug: "florecer" },
-];
+
 const TESTIMONIALS = [
   {
     quote:
@@ -239,6 +232,7 @@ const TESTIMONIALS = [
 ];
 
 export default function DolceGiftboxHome() {
+    const { categories, categoryCards } = useProducts();
   const [menuOpen, setMenuOpen] = useState(false);
  const [dudasOpen, setDudasOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
@@ -515,7 +509,7 @@ useEffect(() => {
             <li className="nav-dropdown">
               <Link href="/productos">Detalles prediseñados</Link>
               <div className="dropdown-menu">
-                {PRODUCT_CATEGORIES.map((cat) => (
+                               {categories.map((cat) => (
                   <Link key={cat} href={`/productos?categoria=${encodeURIComponent(cat)}`}>{cat}</Link>
                 ))}
                 <Link href="/productos" className="dropdown-all">Todos</Link>
@@ -618,7 +612,7 @@ useEffect(() => {
       <section className="section">
         <Reveal><div className="section-head-row"><h2>Nuestras categorías</h2></div></Reveal>
         <div className="categories-grid">
-  {CATEGORIES.map((c, i) => (
+  {categoryCards.map((c, i) => (
     <Reveal key={c.title} delay={i * 70}>
       <Link href={`/productos?categoria=${encodeURIComponent(c.title)}`} className="category-card" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
         <CategoryPhoto slug={c.photoSlug} alt={c.title} label={c.title} />
