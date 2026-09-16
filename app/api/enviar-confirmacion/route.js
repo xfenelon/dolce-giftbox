@@ -40,7 +40,7 @@ export async function POST(req) {
         (i) => `
         <tr>
           <td style="padding:10px 0;border-bottom:1px solid #EFE6DC;font-family:Georgia,serif;color:#4A3A2C;">
-            ${i.name}${i.ribbon ? ` · Listón: ${i.ribbon}` : ""}${i.variant ? ` · ${i.variant}` : ""}
+                       ${i.name}${i.ribbon ? ` · Listón: ${i.ribbon}` : ""}${i.variant ? ` · ${i.variant}` : ""}${i.itemOption ? ` · ${i.itemOptionLabel}: ${i.itemOption}` : ""}
             <br/><span style="color:#927A5D;font-size:13px;">Cantidad: ${i.qty}</span>
           </td>
           <td style="padding:10px 0;border-bottom:1px solid #EFE6DC;text-align:right;font-family:Georgia,serif;color:#4A3A2C;white-space:nowrap;">

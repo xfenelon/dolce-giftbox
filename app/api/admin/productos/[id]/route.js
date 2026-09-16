@@ -22,8 +22,10 @@ export async function PUT(request, { params }) {
            available: available !== false,
            image: image || null,
       packaging_slug: packaging_slug || null,
-      stock: stock === "" || stock === undefined ? null : stock,
+            stock: stock === "" || stock === undefined ? null : stock,
       variants: variants || null,
+      option_label: option_label || null,
+      option_values: option_values || null,
     })
     .eq("id", id)
     .select()

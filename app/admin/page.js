@@ -43,8 +43,10 @@ const emptyForm = {
   available: true,
    image: "",
   packaging_slug: "",
-  stock: "",
+   stock: "",
   variants: [],
+  option_label: "",
+  option_values: [],
 };
 
 export default function AdminPage() {
@@ -89,8 +91,10 @@ export default function AdminPage() {
       available: p.available,
           image: p.image || "",
            packaging_slug: p.packaging_slug || "",
-      stock: p.stock ?? "",
+        stock: p.stock ?? "",
       variants: p.variants || [],
+      option_label: p.option_label || "",
+      option_values: (p.option_values || []).map((v) => ({ name: v.name, stock: v.stock ?? "" })),
     });
     setShowForm(true);
     setErrorMsg("");
@@ -140,8 +144,15 @@ export default function AdminPage() {
       available: form.available,
            image: form.image || null,
            packaging_slug: form.packaging_slug || null,
-      stock: form.stock !== "" ? parseInt(form.stock, 10) : null,
+           stock: form.stock !== "" ? parseInt(form.stock, 10) : null,
       variants: form.variants && form.variants.length > 0 ? form.variants : null,
+      option_label: form.option_label.trim() || null,
+      option_values:
+        form.option_label.trim() && form.option_values.some((v) => v.name.trim())
+          ? form.option_values
+              .filter((v) => v.name.trim())
+              .map((v) => ({ name: v.name.trim(), stock: v.stock === "" ? null : parseInt(v.stock, 10) }))
+          : null,
     };
 
     const url = form.id ? `/api/admin/productos/${form.id}` : "/api/admin/productos";
@@ -381,10 +392,66 @@ export default function AdminPage() {
                           setForm({ ...form, variants: updated });
                         }}
                       />
-                      {v.name} {v.available === false ? "(agotada)" : ""}
+                                       {v.name} {v.available === false ? "(agotada)" : ""}
                     </label>
                   ))}
                 </div>
+              </>
+            )}
+
+            <label style={labelStyle}>Opción de un artículo dentro de la caja (ej: Color del joyero, Olor de la vela — déjalo vacío si no aplica)</label>
+            <input
+              style={inputStyle}
+              value={form.option_label}
+              onChange={(e) => setForm({ ...form, option_label: e.target.value })}
+              placeholder="ej: Color"
+            />
+
+            {form.option_label.trim() && (
+              <>
+                <label style={labelStyle}>Valores de "{form.option_label}" y su stock</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
+                  {form.option_values.map((v, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <input
+                        style={{ ...inputStyle, flex: 2 }}
+                        value={v.name}
+                        onChange={(e) => {
+                          const updated = [...form.option_values];
+                          updated[i] = { ...updated[i], name: e.target.value };
+                          setForm({ ...form, option_values: updated });
+                        }}
+                        placeholder="ej: Dorado"
+                      />
+                      <input
+                        style={{ ...inputStyle, flex: 1 }}
+                        type="number"
+                        min="0"
+                        value={v.stock}
+                        onChange={(e) => {
+                          const updated = [...form.option_values];
+                          updated[i] = { ...updated[i], stock: e.target.value };
+                          setForm({ ...form, option_values: updated });
+                        }}
+                        placeholder="Stock"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, option_values: form.option_values.filter((_, idx) => idx !== i) })}
+                        style={{ background: "none", border: "none", color: "#A23B3B", cursor: "pointer" }}
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, option_values: [...form.option_values, { name: "", stock: "" }] })}
+                  style={{ background: "none", border: "1px solid #CEBAA7", borderRadius: 8, padding: "6px 12px", fontSize: 13, color: "#927A5D", cursor: "pointer", marginBottom: 14 }}
+                >
+                  + Agregar valor
+                </button>
               </>
             )}
 

@@ -37,12 +37,14 @@ export function CartProvider({ children }) {
     setItems((prev) => {
       const existing = prev.find(
         (i) => i.slug === product.slug && i.ribbon === product.ribbon &&
-          i.variant === product.variant && i.customName === product.customName
+          i.variant === product.variant && i.customName === product.customName &&
+          i.itemOption === product.itemOption
       );
       if (existing) {
         return prev.map((i) =>
           i.slug === product.slug && i.ribbon === product.ribbon &&
-            i.variant === product.variant && i.customName === product.customName
+            i.variant === product.variant && i.customName === product.customName &&
+            i.itemOption === product.itemOption
             ? { ...i, qty: i.qty + product.qty }
             : i
         );
@@ -56,14 +58,14 @@ export function CartProvider({ children }) {
     toastTimer.current = setTimeout(() => setToast(null), 2500);
   };
 
-const removeItem = (slug, ribbon, variant, customName) => {
-    setItems((prev) => prev.filter((i) => !(i.slug === slug && i.ribbon === ribbon && i.variant === variant && i.customName === customName)));
+const removeItem = (slug, ribbon, variant, customName, itemOption) => {
+    setItems((prev) => prev.filter((i) => !(i.slug === slug && i.ribbon === ribbon && i.variant === variant && i.customName === customName && i.itemOption === itemOption)));
   };
 
-  const updateQty = (slug, ribbon, qty, variant, customName) => {
+  const updateQty = (slug, ribbon, qty, variant, customName, itemOption) => {
     if (qty < 1) return;
     setItems((prev) =>
-      prev.map((i) => (i.slug === slug && i.ribbon === ribbon && i.variant === variant && i.customName === customName ? { ...i, qty } : i))
+      prev.map((i) => (i.slug === slug && i.ribbon === ribbon && i.variant === variant && i.customName === customName && i.itemOption === itemOption ? { ...i, qty } : i))
     );
   };
 

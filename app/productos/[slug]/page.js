@@ -42,6 +42,12 @@ function getFirstAvailableVariant(variants) {
   return (available || variants[0]).name;
 }
 
+function getFirstAvailableOptionValue(values) {
+  if (!values || values.length === 0) return null;
+  const available = values.find((v) => v.stock !== 0);
+  return (available || values[0]).name;
+}
+
 
 
 function ProductGallery({ slug, name, packaging, image }) {
@@ -89,7 +95,8 @@ export default function ProductDetailPage({ params }) {
   const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [ribbon, setRibbon] = useState("Blanco");
-    const [variant, setVariant] = useState(getFirstAvailableVariant(product?.variants));
+       const [variant, setVariant] = useState(getFirstAvailableVariant(product?.variants));
+  const [itemOption, setItemOption] = useState(getFirstAvailableOptionValue(product?.option_values));
   const [customName, setCustomName] = useState("");
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -104,11 +111,14 @@ export default function ProductDetailPage({ params }) {
 
   // Si los productos llegan después del primer render (carga desde Supabase),
   // selecciona la primera variante en cuanto el producto esté disponible.
-   useEffect(() => {
+    useEffect(() => {
     if (product?.variants && !variant) {
       setVariant(getFirstAvailableVariant(product.variants));
     }
-  }, [product, variant]);
+    if (product?.option_values && !itemOption) {
+      setItemOption(getFirstAvailableOptionValue(product.option_values));
+    }
+  }, [product, variant, itemOption]);
 
   if (productsLoading) {
     return (
@@ -137,9 +147,11 @@ export default function ProductDetailPage({ params }) {
       priceLabel: product.priceLabel,
       price: product.price,
       category: product.category,
-      ribbon: isPeluche ? null : ribbon,
+           ribbon: isPeluche ? null : ribbon,
       variant: variant || null,
       customName: customName.trim() || null,
+      itemOption: product.option_values ? itemOption || null : null,
+      itemOptionLabel: product.option_values ? product.option_label || null : null,
       qty,
     });
     setAdded(true);
@@ -393,7 +405,7 @@ export default function ProductDetailPage({ params }) {
           <p className="pd-price">{product.priceLabel}</p>
           <p className="pd-installments">{product.installmentLabel}</p>
 
-          {product.variants && (
+                   {product.variants && (
             <>
               <p className="pd-label">Elige tu opción: {variant}</p>
                            <div className="ribbon-options">
@@ -405,6 +417,24 @@ export default function ProductDetailPage({ params }) {
                     disabled={v.available === false}
                   >
                     {v.name}{v.available === false ? " (Agotada)" : ""}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {product.option_values && product.option_values.length > 0 && (
+            <>
+              <p className="pd-label">{product.option_label}: {itemOption}</p>
+              <div className="ribbon-options">
+                {product.option_values.map((v) => (
+                  <button
+                    key={v.name}
+                    className={`ribbon-chip ${itemOption === v.name ? "active" : ""} ${v.stock === 0 ? "ribbon-chip-disabled" : ""}`}
+                    onClick={() => v.stock !== 0 && setItemOption(v.name)}
+                    disabled={v.stock === 0}
+                  >
+                    {v.name}{v.stock === 0 ? " (Agotado)" : ""}
                   </button>
                 ))}
               </div>
@@ -460,7 +490,7 @@ export default function ProductDetailPage({ params }) {
           <a
             className="btn-personalize"
             href={`https://wa.me/573113290390?text=${encodeURIComponent(
-                            `Hola! Quiero personalizar "${product.name}"${!isPeluche ? ` (listón ${ribbon})` : ""}${variant ? `, opción ${variant}` : ""}${customName.trim() ? `, nombre "${customName.trim()}"` : ""}, cantidad ${qty}. ¿Me ayudan? 🎁`
+                                       `Hola! Quiero personalizar "${product.name}"${!isPeluche ? ` (listón ${ribbon})` : ""}${variant ? `, opción ${variant}` : ""}${itemOption ? `, ${product.option_label} ${itemOption}` : ""}${customName.trim() ? `, nombre "${customName.trim()}"` : ""}, cantidad ${qty}. ¿Me ayudan? 🎁`
             )}`}
             target="_blank"
             rel="noopener noreferrer"
