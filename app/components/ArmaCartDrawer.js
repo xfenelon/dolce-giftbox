@@ -15,8 +15,8 @@ export default function ArmaCartDrawer({ open, onClose }) {
   const onlyPackaging = items.length > 0 && items.every((i) => i.type === "empaque");
   const hasFlowers = items.some((i) => FLOWER_SLUGS.includes(i.slug));
 
-  const whatsappMessage = items
-    .map((i) => `- ${i.name} x${i.qty}`)
+   const whatsappMessage = items
+    .map((i) => `- ${i.name}${i.option ? ` (${i.optionLabel}: ${i.option})` : ""} x${i.qty}`)
     .join("%0A");
 
   return (
@@ -35,7 +35,8 @@ export default function ArmaCartDrawer({ open, onClose }) {
         .cart-item-photo { width: 72px; height: 72px; border-radius: 10px; overflow: hidden; background: #F4EAE1; flex-shrink: 0; }
         .cart-item-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .cart-item-info { flex: 1; min-width: 0; }
-        .cart-item-info h4 { font-size: 14.5px; color: #4A3A2C; margin: 0 0 3px; font-weight: 400; font-family: 'Marcellus', serif; }
+               .cart-item-info h4 { font-size: 14.5px; color: #4A3A2C; margin: 0 0 3px; font-weight: 400; font-family: 'Marcellus', serif; }
+        .cart-item-ribbon { font-size: 12px; color: #BBA083; margin: 0 0 8px; }
         .cart-item-controls { display:flex; align-items:center; justify-content: space-between; }
         .cart-item-qty { display:flex; align-items:center; border:1px solid #CEBAA7; border-radius: 999px; overflow:hidden; }
         .cart-item-qty button { background:none; border:none; padding: 5px 9px; cursor:pointer; color: #927A5D; display:flex; }
@@ -67,7 +68,7 @@ export default function ArmaCartDrawer({ open, onClose }) {
         ) : (
           <div className="cart-items">
             {items.map((item) => (
-              <div className="cart-item" key={item.slug}>
+                            <div className="cart-item" key={`${item.slug}-${item.option}`}>
                 <div className="cart-item-photo">
                   <img
                     src={item.image}
@@ -76,14 +77,15 @@ export default function ArmaCartDrawer({ open, onClose }) {
                   />
                 </div>
                 <div className="cart-item-info">
-                  <h4>{item.name}</h4>
+                                   <h4>{item.name}</h4>
+                  {item.option && <p className="cart-item-ribbon">{item.optionLabel}: {item.option}</p>}
                   <div className="cart-item-controls">
                     <div className="cart-item-qty">
-                      <button onClick={() => updateQty(item.slug, item.qty - 1)} aria-label="Menos"><Minus size={12} /></button>
+                      <button onClick={() => updateQty(item.slug, item.qty - 1, item.option)} aria-label="Menos"><Minus size={12} /></button>
                       <span>{item.qty}</span>
-                      <button onClick={() => updateQty(item.slug, item.qty + 1)} aria-label="Más"><Plus size={12} /></button>
+                      <button onClick={() => updateQty(item.slug, item.qty + 1, item.option)} aria-label="Más"><Plus size={12} /></button>
                     </div>
-                    <button className="cart-item-remove" onClick={() => removeItem(item.slug)} aria-label="Quitar">
+                    <button className="cart-item-remove" onClick={() => removeItem(item.slug, item.option)} aria-label="Quitar">
                       <Trash2 size={16} />
                     </button>
                   </div>

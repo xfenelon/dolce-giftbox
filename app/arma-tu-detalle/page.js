@@ -84,9 +84,20 @@ function PackagingCard({ pkg, onChoose }) {
     </div>
   );
 }
+function getFirstAvailableOptionValue(values) {
+  if (!values || values.length === 0) return null;
+  const available = values.find((v) => v.stock !== 0);
+  return (available || values[0]).name;
+}
+
+
 
 function ArmaProductCard({ item, addItem, highlighted }) {
   const [qty, setQty] = useState(1);
+  const [optionValue, setOptionValue] = useState(getFirstAvailableOptionValue(item.option_values));
+  const hasOptions = item.option_values && item.option_values.length > 0;
+  const selectedOutOfStock = hasOptions && item.option_values.find((v) => v.name === optionValue)?.stock === 0;
+  const canAdd = item.available && (!hasOptions || !selectedOutOfStock);
 
   const handleAdd = () => {
     addItem({
@@ -96,6 +107,8 @@ function ArmaProductCard({ item, addItem, highlighted }) {
       price: item.price,
       image: item.image?.startsWith("http") ? item.image : `/arma-productos/${item.folder}/${item.slug}.jpg`,
       type: "producto",
+      option: hasOptions ? optionValue : null,
+      optionLabel: hasOptions ? item.option_label : null,
       qty,
     });
     setQty(1);
@@ -107,7 +120,27 @@ function ArmaProductCard({ item, addItem, highlighted }) {
       <ArmaItemPhoto folder={item.folder} slug={item.slug} alt={item.name} label={item.name} image={item.image} />
       <h3>{item.name}</h3>
       <p className="arma-desc">{item.description}</p>
-      <p className="packaging-price">{item.priceLabel}</p>
+           <p className="packaging-price">{item.priceLabel}</p>
+
+      {item.available && hasOptions && (
+        <div className="arma-option-row">
+          <p className="arma-option-label">{item.option_label}: {optionValue}</p>
+          <div className="arma-ribbon-options">
+            {item.option_values.map((v) => (
+              <button
+                key={v.name}
+                type="button"
+                className={`arma-ribbon-chip ${optionValue === v.name ? "active" : ""} ${v.stock === 0 ? "arma-ribbon-chip-disabled" : ""}`}
+                onClick={() => v.stock !== 0 && setOptionValue(v.name)}
+                disabled={v.stock === 0}
+              >
+                {v.name}{v.stock === 0 ? " (Agotado)" : ""}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {item.available && (
         <div className="arma-qty-control">
           <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Menos"><Minus size={13} /></button>
@@ -115,8 +148,8 @@ function ArmaProductCard({ item, addItem, highlighted }) {
           <button onClick={() => setQty((q) => q + 1)} aria-label="Más"><Plus size={13} /></button>
         </div>
       )}
-      <button className="packaging-btn" disabled={!item.available} onClick={handleAdd}>
-        {item.available ? "Agregar al carrito" : "Agotado"}
+      <button className="packaging-btn" disabled={!canAdd} onClick={handleAdd}>
+        {canAdd ? "Agregar al carrito" : "Agotado"}
       </button>
     </div>
   );
@@ -322,7 +355,16 @@ const [menuOpen, setMenuOpen] = useState(false);
         .arma-qty-control { display:flex; align-items:center; justify-content:center; gap: 4px; border:1px solid var(--tan);
           border-radius: 999px; overflow:hidden; width: fit-content; margin: 0 auto 12px; }
         .arma-qty-control button { background:none; border:none; padding: 8px 12px; cursor:pointer; color: var(--olive); display:flex; }
-        .arma-qty-control span { padding: 0 6px; font-size: 13px; color: var(--olive); }
+               .arma-qty-control span { padding: 0 6px; font-size: 13px; color: var(--olive); }
+
+        .arma-option-row { margin-bottom: 10px; }
+        .arma-option-label { font-size: 11.5px; color: var(--olive); margin: 0 0 6px; }
+        .arma-ribbon-options { display:flex; gap: 6px; flex-wrap: wrap; justify-content:center; }
+        .arma-ribbon-chip { border: 1px solid var(--taupe); background: none; padding: 5px 12px; border-radius: 8px;
+          font-family:'Marcellus'; font-size: 11.5px; cursor:pointer; color: var(--ink); transition: all .2s; }
+        .arma-ribbon-chip.active { border-color: var(--olive); background: var(--cream); color: var(--olive); }
+        .arma-ribbon-chip-disabled { opacity: 0.45; text-decoration: line-through; cursor: not-allowed; }
+        .arma-ribbon-chip-disabled:hover { background: none !important; }
 
         .faq-section { max-width: 620px; margin: 50px auto 0; padding: 0 6vw; }
         .faq-title { text-align:center; font-size: 24px; font-weight: 400; color: var(--olive); margin: 0 0 26px; }

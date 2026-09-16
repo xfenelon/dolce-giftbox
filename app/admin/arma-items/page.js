@@ -19,9 +19,11 @@ const emptyForm = {
   category: CATEGORIES[0],
   price: "",
   available: true,
-  description: "",
+   description: "",
   image: "",
   stock: "",
+  option_label: "",
+  option_values: [],
 };
 
 export default function AdminArmaItemsPage() {
@@ -62,8 +64,10 @@ export default function AdminArmaItemsPage() {
       price: it.price || "",
       available: it.available,
         description: it.description || "",
-      image: it.image || "",
+           image: it.image || "",
       stock: it.stock ?? "",
+      option_label: it.option_label || "",
+      option_values: (it.option_values || []).map((v) => ({ name: v.name, stock: v.stock ?? "" })),
     });
     setShowForm(true);
     setErrorMsg("");
@@ -108,8 +112,15 @@ export default function AdminArmaItemsPage() {
       price: form.price,
       available: form.available,
            description: form.description.trim(),
-      image: form.image,
+          image: form.image,
       stock: form.stock,
+      option_label: form.option_label.trim() || null,
+      option_values:
+        form.option_label.trim() && form.option_values.some((v) => v.name.trim())
+          ? form.option_values
+              .filter((v) => v.name.trim())
+              .map((v) => ({ name: v.name.trim(), stock: v.stock === "" ? null : parseInt(v.stock, 10) }))
+          : null,
     };
 
     const url = form.id ? `/api/admin/arma-items/${form.id}` : "/api/admin/arma-items";
@@ -193,8 +204,8 @@ export default function AdminArmaItemsPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: 14.5, color: "#4A3A2C" }}>{it.name}</p>
-                                    <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
-                    {it.category} · ${Number(it.price).toLocaleString("es-CO")} · {it.available ? "Disponible" : "No disponible"} · Stock: {it.stock ?? "—"}
+                                                     <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
+                    {it.category} · ${Number(it.price).toLocaleString("es-CO")} · {it.available ? "Disponible" : "No disponible"} · Stock: {it.stock ?? "—"}{it.option_label ? ` · ${it.option_label}: ${(it.option_values || []).length} valores` : ""}
                   </p>
                 </div>
                 <button onClick={() => openEditForm(it)} style={iconBtnStyle}>
@@ -293,8 +304,64 @@ export default function AdminArmaItemsPage() {
               min="0"
               value={form.stock}
               onChange={(e) => setForm({ ...form, stock: e.target.value })}
-              placeholder="ej: 5 (déjalo vacío si no llevas conteo)"
+                            placeholder="ej: 5 (déjalo vacío si no llevas conteo)"
             />
+
+            <label style={labelStyle}>Nombre de la opción (ej: Color, Sabor, Olor — déjalo vacío si este artículo no varía)</label>
+            <input
+              style={inputStyle}
+              value={form.option_label}
+              onChange={(e) => setForm({ ...form, option_label: e.target.value })}
+              placeholder="ej: Color"
+            />
+
+            {form.option_label.trim() && (
+              <>
+                <label style={labelStyle}>Valores de "{form.option_label}" y su stock</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
+                  {form.option_values.map((v, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <input
+                        style={{ ...inputStyle, flex: 2 }}
+                        value={v.name}
+                        onChange={(e) => {
+                          const updated = [...form.option_values];
+                          updated[i] = { ...updated[i], name: e.target.value };
+                          setForm({ ...form, option_values: updated });
+                        }}
+                        placeholder="ej: Dorado"
+                      />
+                      <input
+                        style={{ ...inputStyle, flex: 1 }}
+                        type="number"
+                        min="0"
+                        value={v.stock}
+                        onChange={(e) => {
+                          const updated = [...form.option_values];
+                          updated[i] = { ...updated[i], stock: e.target.value };
+                          setForm({ ...form, option_values: updated });
+                        }}
+                        placeholder="Stock"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, option_values: form.option_values.filter((_, idx) => idx !== i) })}
+                        style={{ background: "none", border: "none", color: "#A23B3B", cursor: "pointer" }}
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, option_values: [...form.option_values, { name: "", stock: "" }] })}
+                  style={{ background: "none", border: "1px solid #CEBAA7", borderRadius: 8, padding: "6px 12px", fontSize: 13, color: "#927A5D", cursor: "pointer", marginBottom: 14 }}
+                >
+                  + Agregar valor
+                </button>
+              </>
+            )}
 
             <label style={labelStyle}>Descripción</label>
             <textarea

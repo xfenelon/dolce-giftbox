@@ -35,10 +35,10 @@ export function ArmaCartProvider({ children }) {
   // Agrega un artículo o empaque. Si ya existe con el mismo slug, suma cantidad.
   const addItem = (product) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.slug === product.slug);
+      const existing = prev.find((i) => i.slug === product.slug && i.option === product.option);
       if (existing) {
         return prev.map((i) =>
-          i.slug === product.slug ? { ...i, qty: i.qty + product.qty } : i
+          i.slug === product.slug && i.option === product.option ? { ...i, qty: i.qty + product.qty } : i
         );
       }
       return [...prev, product];
@@ -50,13 +50,13 @@ export function ArmaCartProvider({ children }) {
     toastTimer.current = setTimeout(() => setToast(null), 2500);
   };
 
-  const removeItem = (slug) => {
-    setItems((prev) => prev.filter((i) => i.slug !== slug));
+  const removeItem = (slug, option) => {
+    setItems((prev) => prev.filter((i) => !(i.slug === slug && i.option === option)));
   };
 
-  const updateQty = (slug, qty) => {
+  const updateQty = (slug, qty, option) => {
     if (qty < 1) return;
-    setItems((prev) => prev.map((i) => (i.slug === slug ? { ...i, qty } : i)));
+    setItems((prev) => prev.map((i) => (i.slug === slug && i.option === option ? { ...i, qty } : i)));
   };
 
   const clearCart = () => setItems([]);

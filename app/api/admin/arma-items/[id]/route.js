@@ -17,7 +17,7 @@ const CATEGORY_FOLDERS = {
 export async function PUT(request, { params }) {
   const { id } = await params;
   const body = await request.json();
-  const { slug, name, category, price, available, description, image } = body;
+    const { slug, name, category, price, available, description, image, stock, option_label, option_values } = body;
 
   const { data, error } = await supabase
     .from("arma_items")
@@ -27,9 +27,12 @@ export async function PUT(request, { params }) {
       category,
       price: parseInt(price, 10),
       available: available !== false,
-      description: description || null,
+           description: description || null,
       folder: CATEGORY_FOLDERS[category] || "",
       image: image || null,
+      stock: stock ? parseInt(stock, 10) : null,
+      option_label: option_label || null,
+      option_values: option_values || null,
     })
     .eq("id", id)
     .select()
