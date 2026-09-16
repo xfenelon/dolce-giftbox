@@ -1,0 +1,21 @@
+{
+  "name": "Dolce Giftbox",
+  "short_name": "Dolce Giftbox",
+  "description": "Cajas de regalo, ramos de flores y detalles personalizados con envío en Medellín y todo Colombia.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4EAE1",
+  "theme_color": "#91795D",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
