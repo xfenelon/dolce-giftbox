@@ -96,7 +96,13 @@ export default function ProductDetailPage({ params }) {
   const [scrolled, setScrolled] = useState(false);
   const [ribbon, setRibbon] = useState("Blanco");
        const [variant, setVariant] = useState(getFirstAvailableVariant(product?.variants));
-  const [itemOption, setItemOption] = useState(getFirstAvailableOptionValue(product?.option_values));
+    const [itemOptions, setItemOptions] = useState(() => {
+    const map = {};
+    (product?.option_groups || []).forEach((g) => {
+      map[g.label] = getFirstAvailableOptionValue(g.values);
+    });
+    return map;
+  });
   const [customName, setCustomName] = useState("");
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -115,10 +121,20 @@ export default function ProductDetailPage({ params }) {
     if (product?.variants && !variant) {
       setVariant(getFirstAvailableVariant(product.variants));
     }
-    if (product?.option_values && !itemOption) {
-      setItemOption(getFirstAvailableOptionValue(product.option_values));
+       if (product?.option_groups && product.option_groups.length > 0) {
+      setItemOptions((prev) => {
+        const next = { ...prev };
+        let changed = false;
+        product.option_groups.forEach((g) => {
+          if (!next[g.label]) {
+            next[g.label] = getFirstAvailableOptionValue(g.values);
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
     }
-  }, [product, variant, itemOption]);
+  }, [product, variant]);
 
   if (productsLoading) {
     return (
@@ -150,8 +166,10 @@ export default function ProductDetailPage({ params }) {
            ribbon: isPeluche ? null : ribbon,
       variant: variant || null,
       customName: customName.trim() || null,
-      itemOption: product.option_values ? itemOption || null : null,
-      itemOptionLabel: product.option_values ? product.option_label || null : null,
+           itemOptions:
+        product.option_groups && product.option_groups.length > 0
+          ? product.option_groups.map((g) => ({ label: g.label, value: itemOptions[g.label] || null }))
+          : null,
       qty,
     });
     setAdded(true);
@@ -423,23 +441,23 @@ export default function ProductDetailPage({ params }) {
             </>
           )}
 
-          {product.option_values && product.option_values.length > 0 && (
-            <>
-              <p className="pd-label">{product.option_label}: {itemOption}</p>
+                {product.option_groups && product.option_groups.map((group) => (
+            <div key={group.label}>
+              <p className="pd-label">{group.label}: {itemOptions[group.label]}</p>
               <div className="ribbon-options">
-                {product.option_values.map((v) => (
+                {group.values.map((v) => (
                   <button
                     key={v.name}
-                    className={`ribbon-chip ${itemOption === v.name ? "active" : ""} ${v.stock === 0 ? "ribbon-chip-disabled" : ""}`}
-                    onClick={() => v.stock !== 0 && setItemOption(v.name)}
+                    className={`ribbon-chip ${itemOptions[group.label] === v.name ? "active" : ""} ${v.stock === 0 ? "ribbon-chip-disabled" : ""}`}
+                    onClick={() => v.stock !== 0 && setItemOptions({ ...itemOptions, [group.label]: v.name })}
                     disabled={v.stock === 0}
                   >
                     {v.name}{v.stock === 0 ? " (Agotado)" : ""}
                   </button>
                 ))}
               </div>
-            </>
-          )}
+            </div>
+          ))}
 
           {product.customNameLabel && (
             <div className="custom-name-row">
@@ -490,7 +508,7 @@ export default function ProductDetailPage({ params }) {
           <a
             className="btn-personalize"
             href={`https://wa.me/573113290390?text=${encodeURIComponent(
-                                       `Hola! Quiero personalizar "${product.name}"${!isPeluche ? ` (listón ${ribbon})` : ""}${variant ? `, opción ${variant}` : ""}${itemOption ? `, ${product.option_label} ${itemOption}` : ""}${customName.trim() ? `, nombre "${customName.trim()}"` : ""}, cantidad ${qty}. ¿Me ayudan? 🎁`
+                                         `Hola! Quiero personalizar "${product.name}"${!isPeluche ? ` (listón ${ribbon})` : ""}${variant ? `, opción ${variant}` : ""}${product.option_groups ? product.option_groups.map((g) => `, ${g.label} ${itemOptions[g.label]}`).join("") : ""}${customName.trim() ? `, nombre "${customName.trim()}"` : ""}, cantidad ${qty}. ¿Me ayudan? 🎁`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

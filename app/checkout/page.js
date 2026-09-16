@@ -247,8 +247,7 @@ const validateEmailField = (email, setError) => {
       ribbon: i.ribbon || null,
       variant: i.variant || null,
       customName: i.customName || null,
-      itemOption: i.itemOption || null,
-      itemOptionLabel: i.itemOptionLabel || null,
+            itemOptions: i.itemOptions || null,
     }));
 
        const { data, error } = await supabase.rpc("crear_pedido", {
@@ -304,8 +303,8 @@ const validateEmailField = (email, setError) => {
       console.error("Error iniciando el pago con Mercado Pago:", payErr);
     }
 
-       const summaryLines = orderItems
-      .map((i) => `- ${i.name}${i.ribbon ? ` (listón ${i.ribbon})` : ""}${i.variant ? ` (${i.variant})` : ""}${i.itemOption ? ` (${i.itemOptionLabel}: ${i.itemOption})` : ""} x${i.qty}`)
+           const summaryLines = orderItems
+      .map((i) => `- ${i.name}${i.ribbon ? ` (listón ${i.ribbon})` : ""}${i.variant ? ` (${i.variant})` : ""}${(i.itemOptions || []).map((o) => ` (${o.label}: ${o.value})`).join("")} x${i.qty}`)
       .join("%0A");
             const waMessage =
       `Hola! Hice el pedido #${orderId} en la página. ` +
@@ -614,7 +613,7 @@ const validateEmailField = (email, setError) => {
           <div className="co-summary-col">
             <h3>Tu pedido ({totalCount})</h3>
             {items.map((item) => (
-                          <div className="co-item" key={`${item.slug}-${item.ribbon}-${item.variant}-${item.customName}-${item.itemOption}`}>
+                                                    <div className="co-item" key={`${item.slug}-${item.ribbon}-${item.variant}-${item.customName}-${JSON.stringify(item.itemOptions)}`}>
                 <div className="co-item-photo">
                   <img
                     src={item.image || `/productos/${item.slug}-1.jpg`}
@@ -624,19 +623,19 @@ const validateEmailField = (email, setError) => {
                 </div>
                 <div className="co-item-info">
                   <h4>{item.name}</h4>
-                               {(item.ribbon || item.variant || item.itemOption) && (
+                                               {(item.ribbon || item.variant || (item.itemOptions && item.itemOptions.length > 0)) && (
                     <p className="co-item-meta">
-                      {item.ribbon && `Listón: ${item.ribbon}`} {item.variant && `· ${item.variant}`} {item.itemOption && `· ${item.itemOptionLabel}: ${item.itemOption}`}
+                      {item.ribbon && `Listón: ${item.ribbon}`} {item.variant && `· ${item.variant}`} {(item.itemOptions || []).map((o) => `· ${o.label}: ${o.value}`).join(" ")}
                     </p>
                   )}
                   <div className="co-item-qty">
-                    <button type="button" onClick={() => updateQty(item.slug, item.ribbon, item.qty - 1, item.variant, item.customName, item.itemOption)}><Minus size={11} /></button>
+                    <button type="button" onClick={() => updateQty(item.slug, item.ribbon, item.qty - 1, item.variant, item.customName, item.itemOptions)}><Minus size={11} /></button>
                     <span>{item.qty}</span>
-                    <button type="button" onClick={() => updateQty(item.slug, item.ribbon, item.qty + 1, item.variant, item.customName, item.itemOption)}><Plus size={11} /></button>
+                    <button type="button" onClick={() => updateQty(item.slug, item.ribbon, item.qty + 1, item.variant, item.customName, item.itemOptions)}><Plus size={11} /></button>
                   </div>
                 </div>
                 <span className="co-item-price">{`$${(item.price * item.qty).toLocaleString("es-CO")}`}</span>
-                <button type="button" className="co-item-remove" onClick={() => removeItem(item.slug, item.ribbon, item.variant, item.customName, item.itemOption)}>
+                <button type="button" className="co-item-remove" onClick={() => removeItem(item.slug, item.ribbon, item.variant, item.customName, item.itemOptions)}>
                   <Trash2 size={15} />
                 </button>
               </div>

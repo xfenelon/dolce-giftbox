@@ -214,8 +214,8 @@ export default function AdminPedidosPage() {
                 <p key={i} style={{ fontSize: 13, color: "#4A3A2C", margin: "0 0 4px" }}>
                   • {item.name}
                   {item.ribbon ? ` (Listón: ${item.ribbon})` : ""}
-                                    {item.variant ? ` (${item.variant})` : ""}
-                  {item.itemOption ? ` (${item.itemOptionLabel}: ${item.itemOption})` : ""}
+                                                 {item.variant ? ` (${item.variant})` : ""}
+                  {(item.itemOptions || []).map((o) => ` (${o.label}: ${o.value})`).join("")}
                   {item.customName ? ` — Nombre: "${item.customName}"` : ""}
                   {" "}x{item.qty}
                 </p>

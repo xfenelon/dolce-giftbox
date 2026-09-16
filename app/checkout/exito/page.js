@@ -138,7 +138,7 @@ Si no ves el correo en tu bandeja de entrada, revisa también la carpeta de No d
                 {item.name}
                 {item.ribbon ? ` · Listón: ${item.ribbon}` : ""}
                                 {item.variant ? ` · ${item.variant}` : ""}
-                {item.itemOption ? ` · ${item.itemOptionLabel}: ${item.itemOption}` : ""}
+                            {(item.itemOptions || []).map((o) => ` · ${o.label}: ${o.value}`).join("")}
                 <br />
                 <span style={{ fontSize: 12, color: "#927A5D" }}>Cantidad: {item.qty}</span>
               </span>

@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from "r
 
 const CartContext = createContext(null);
 const STORAGE_KEY = "dolce-cart";
+const optionsKey = (opts) => JSON.stringify(opts || []);
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
@@ -35,16 +36,16 @@ export function CartProvider({ children }) {
   // Agrega un producto. Si ya existe con el mismo slug + listón, suma cantidad.
   const addItem = (product) => {
     setItems((prev) => {
-      const existing = prev.find(
+         const existing = prev.find(
         (i) => i.slug === product.slug && i.ribbon === product.ribbon &&
           i.variant === product.variant && i.customName === product.customName &&
-          i.itemOption === product.itemOption
+          optionsKey(i.itemOptions) === optionsKey(product.itemOptions)
       );
       if (existing) {
         return prev.map((i) =>
           i.slug === product.slug && i.ribbon === product.ribbon &&
             i.variant === product.variant && i.customName === product.customName &&
-            i.itemOption === product.itemOption
+            optionsKey(i.itemOptions) === optionsKey(product.itemOptions)
             ? { ...i, qty: i.qty + product.qty }
             : i
         );
@@ -58,14 +59,14 @@ export function CartProvider({ children }) {
     toastTimer.current = setTimeout(() => setToast(null), 2500);
   };
 
-const removeItem = (slug, ribbon, variant, customName, itemOption) => {
-    setItems((prev) => prev.filter((i) => !(i.slug === slug && i.ribbon === ribbon && i.variant === variant && i.customName === customName && i.itemOption === itemOption)));
+const removeItem = (slug, ribbon, variant, customName, itemOptions) => {
+    setItems((prev) => prev.filter((i) => !(i.slug === slug && i.ribbon === ribbon && i.variant === variant && i.customName === customName && optionsKey(i.itemOptions) === optionsKey(itemOptions))));
   };
 
-  const updateQty = (slug, ribbon, qty, variant, customName, itemOption) => {
+  const updateQty = (slug, ribbon, qty, variant, customName, itemOptions) => {
     if (qty < 1) return;
     setItems((prev) =>
-      prev.map((i) => (i.slug === slug && i.ribbon === ribbon && i.variant === variant && i.customName === customName && i.itemOption === itemOption ? { ...i, qty } : i))
+      prev.map((i) => (i.slug === slug && i.ribbon === ribbon && i.variant === variant && i.customName === customName && optionsKey(i.itemOptions) === optionsKey(itemOptions) ? { ...i, qty } : i))
     );
   };
 
