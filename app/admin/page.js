@@ -49,6 +49,7 @@ const emptyForm = {
 
 export default function AdminPage() {
   const [productos, setProductos] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState("Todos");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
@@ -212,11 +213,35 @@ export default function AdminPage() {
         </div>
         </div>
 
+               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
+          {[{ label: "Todos", count: productos.length }, ...CATEGORIES.map((c) => ({ label: c, count: productos.filter((p) => p.category === c).length }))].map(({ label, count }) => (
+            <button
+              key={label}
+              onClick={() => setCategoryFilter(label)}
+              style={{
+                background: categoryFilter === label ? "#927A5D" : "#fff",
+                color: categoryFilter === label ? "#fff" : "#927A5D",
+                border: "1px solid #CEBAA7",
+                borderRadius: 999,
+                padding: "7px 14px",
+                fontSize: 12.5,
+                fontFamily: "'Marcellus', serif",
+                cursor: "pointer",
+              }}
+            >
+              {label} ({count})
+            </button>
+          ))}
+        </div>
+
         {loading ? (
           <p style={{ color: "#927A5D" }}>Cargando...</p>
         ) : (
           <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden" }}>
-            {productos.map((p) => (
+            {productos.filter((p) => categoryFilter === "Todos" || p.category === categoryFilter).length === 0 && (
+              <p style={{ padding: 20, color: "#927A5D", fontSize: 13 }}>No hay productos en esta categoría.</p>
+            )}
+            {productos.filter((p) => categoryFilter === "Todos" || p.category === categoryFilter).map((p) => (
               <div
                 key={p.id}
                 style={{

@@ -28,6 +28,7 @@ const emptyForm = {
 
 export default function AdminArmaItemsPage() {
   const [items, setItems] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState("Todos");
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
   const [showForm, setShowForm] = useState(false);
@@ -179,11 +180,35 @@ export default function AdminArmaItemsPage() {
           </button>
         </div>
 
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
+          {[{ label: "Todos", count: items.length }, ...CATEGORIES.map((c) => ({ label: c, count: items.filter((it) => it.category === c).length }))].map(({ label, count }) => (
+            <button
+              key={label}
+              onClick={() => setCategoryFilter(label)}
+              style={{
+                background: categoryFilter === label ? "#927A5D" : "#fff",
+                color: categoryFilter === label ? "#fff" : "#927A5D",
+                border: "1px solid #CEBAA7",
+                borderRadius: 999,
+                padding: "7px 14px",
+                fontSize: 12.5,
+                fontFamily: "'Marcellus', serif",
+                cursor: "pointer",
+              }}
+            >
+              {label} ({count})
+            </button>
+          ))}
+        </div>
+
         {loading ? (
           <p style={{ color: "#927A5D" }}>Cargando...</p>
         ) : (
           <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden" }}>
-            {items.map((it) => (
+            {items.filter((it) => categoryFilter === "Todos" || it.category === categoryFilter).length === 0 && (
+              <p style={{ padding: 20, color: "#927A5D", fontSize: 13 }}>No hay artículos en esta categoría.</p>
+            )}
+            {items.filter((it) => categoryFilter === "Todos" || it.category === categoryFilter).map((it) => (
               <div
                 key={it.id}
                 style={{
