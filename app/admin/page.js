@@ -41,8 +41,9 @@ const emptyForm = {
   price: "",
   bullets: "",
   available: true,
-  image: "",
+   image: "",
   packaging_slug: "",
+  stock: "",
 };
 
 export default function AdminPage() {
@@ -84,8 +85,9 @@ export default function AdminPage() {
       price: p.price || "",
       bullets: (p.bullets || []).join(", "),
       available: p.available,
-      image: p.image || "",
+          image: p.image || "",
       packaging_slug: p.packaging_slug || "",
+      stock: p.stock ?? "",
     });
     setShowForm(true);
     setErrorMsg("");
@@ -133,8 +135,9 @@ export default function AdminPage() {
         .map((b) => b.trim())
         .filter(Boolean),
       available: form.available,
-      image: form.image || null,
+           image: form.image || null,
       packaging_slug: form.packaging_slug || null,
+      stock: form.stock !== "" ? parseInt(form.stock, 10) : null,
     };
 
     const url = form.id ? `/api/admin/productos/${form.id}` : "/api/admin/productos";
@@ -233,8 +236,8 @@ export default function AdminPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: 14.5, color: "#4A3A2C" }}>{p.name}</p>
-                  <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
-                    {p.category} · ${Number(p.price).toLocaleString("es-CO")} · {p.available ? "Disponible" : "No disponible"}
+                                   <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
+                    {p.category} · ${Number(p.price).toLocaleString("es-CO")} · {p.available ? "Disponible" : "No disponible"} · Stock: {p.stock ?? "—"}
                   </p>
                 </div>
                 <button onClick={() => openEditForm(p)} style={iconBtnStyle}>
@@ -316,13 +319,23 @@ export default function AdminPage() {
               ))}
             </select>
 
-            <label style={labelStyle}>Precio (COP)</label>
+                       <label style={labelStyle}>Precio (COP)</label>
             <input
               style={inputStyle}
               type="number"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               placeholder="139000"
+            />
+
+            <label style={labelStyle}>Stock (unidades disponibles)</label>
+            <input
+              style={inputStyle}
+              type="number"
+              min="0"
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              placeholder="ej: 5 (déjalo vacío si no llevas conteo)"
             />
 
             <label style={labelStyle}>Bullets (separados por coma)</label>

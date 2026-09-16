@@ -29,7 +29,7 @@ export async function GET() {
 
 export async function POST(request) {
   const body = await request.json();
-  const { slug, name, category, price, available, description, image } = body;
+   const { slug, name, category, price, available, description, image, stock } = body;
 
   if (!slug || !name || !category || !price) {
     return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 });
@@ -43,10 +43,12 @@ export async function POST(request) {
       category,
       price: parseInt(price, 10),
       available: available !== false,
-      description: description || null,
+            description: description || null,
       folder: CATEGORY_FOLDERS[category] || "",
       image: image || null,
+      stock: stock ? parseInt(stock, 10) : null,
     })
+    .eq("id", id)
     .select()
     .single();
 

@@ -11,8 +11,9 @@ const emptyForm = {
   material: "",
   dimensions: "",
   price: "",
-  available: true,
+   available: true,
   photo: "",
+  stock: "",
 };
 
 export default function AdminEmpaquesPage() {
@@ -52,8 +53,9 @@ export default function AdminEmpaquesPage() {
       material: e.material,
       dimensions: e.dimensions,
       price: e.price || "",
-      available: e.available,
+         available: e.available,
       photo: e.photo || "",
+      stock: e.stock ?? "",
     });
     setShowForm(true);
     setErrorMsg("");
@@ -97,10 +99,10 @@ export default function AdminEmpaquesPage() {
       material: form.material.trim(),
       dimensions: form.dimensions.trim(),
       price: form.price,
-      available: form.available,
+          available: form.available,
       photo: form.photo,
+      stock: form.stock,
     };
-
     const url = form.id ? `/api/admin/empaques/${form.id}` : "/api/admin/empaques";
     const method = form.id ? "PUT" : "POST";
 
@@ -184,8 +186,8 @@ export default function AdminEmpaquesPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: 14.5, color: "#4A3A2C" }}>{e.name}</p>
-                  <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
-                    {e.material} · {e.dimensions} · ${Number(e.price).toLocaleString("es-CO")} · {e.available ? "Disponible" : "No disponible"}
+                                  <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
+                    {e.material} · {e.dimensions} · ${Number(e.price).toLocaleString("es-CO")} · {e.available ? "Disponible" : "No disponible"} · Stock: {e.stock ?? "—"}
                   </p>
                 </div>
                 <button onClick={() => openEditForm(e)} style={iconBtnStyle}>
@@ -274,7 +276,7 @@ export default function AdminEmpaquesPage() {
               required
             />
 
-            <label style={labelStyle}>Precio (COP)</label>
+                       <label style={labelStyle}>Precio (COP)</label>
             <input
               style={inputStyle}
               type="number"
@@ -282,6 +284,16 @@ export default function AdminEmpaquesPage() {
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               placeholder="45000"
               required
+            />
+
+            <label style={labelStyle}>Stock (unidades disponibles)</label>
+            <input
+              style={inputStyle}
+              type="number"
+              min="0"
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              placeholder="ej: 5 (déjalo vacío si no llevas conteo)"
             />
 
             <label style={labelStyle}>Foto</label>

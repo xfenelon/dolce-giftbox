@@ -21,7 +21,7 @@ export async function GET() {
 
 export async function POST(request) {
   const body = await request.json();
-  const { slug, name, material, dimensions, price, available, photo } = body;
+    const { slug, name, material, dimensions, price, available, photo, stock } = body;
 
   if (!slug || !name || !material || !dimensions || !price || !photo) {
     return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 });
@@ -34,9 +34,10 @@ export async function POST(request) {
       name,
       material,
       dimensions,
-      price: parseInt(price, 10),
+          price: parseInt(price, 10),
       available: available !== false,
       photo,
+      stock: stock ? parseInt(stock, 10) : null,
     })
     .select()
     .single();

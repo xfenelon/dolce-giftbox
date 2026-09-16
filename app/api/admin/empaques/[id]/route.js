@@ -9,7 +9,7 @@ const supabase = createClient(
 export async function PUT(request, { params }) {
   const { id } = await params;
   const body = await request.json();
-  const { slug, name, material, dimensions, price, available, photo } = body;
+   const { slug, name, material, dimensions, price, available, photo, stock } = body;
 
   const { data, error } = await supabase
     .from("empaques")
@@ -18,9 +18,10 @@ export async function PUT(request, { params }) {
       name,
       material,
       dimensions,
-      price: parseInt(price, 10),
+           price: parseInt(price, 10),
       available: available !== false,
       photo,
+      stock: stock ? parseInt(stock, 10) : null,
     })
     .eq("id", id)
     .select()

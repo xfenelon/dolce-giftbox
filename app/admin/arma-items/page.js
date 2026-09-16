@@ -21,6 +21,7 @@ const emptyForm = {
   available: true,
   description: "",
   image: "",
+  stock: "",
 };
 
 export default function AdminArmaItemsPage() {
@@ -60,8 +61,9 @@ export default function AdminArmaItemsPage() {
       category: it.category,
       price: it.price || "",
       available: it.available,
-      description: it.description || "",
+        description: it.description || "",
       image: it.image || "",
+      stock: it.stock ?? "",
     });
     setShowForm(true);
     setErrorMsg("");
@@ -105,8 +107,9 @@ export default function AdminArmaItemsPage() {
       category: form.category,
       price: form.price,
       available: form.available,
-      description: form.description.trim(),
+           description: form.description.trim(),
       image: form.image,
+      stock: form.stock,
     };
 
     const url = form.id ? `/api/admin/arma-items/${form.id}` : "/api/admin/arma-items";
@@ -190,8 +193,8 @@ export default function AdminArmaItemsPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: 14.5, color: "#4A3A2C" }}>{it.name}</p>
-                  <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
-                    {it.category} · ${Number(it.price).toLocaleString("es-CO")} · {it.available ? "Disponible" : "No disponible"}
+                                    <p style={{ margin: 0, fontSize: 12, color: "#927A5D" }}>
+                    {it.category} · ${Number(it.price).toLocaleString("es-CO")} · {it.available ? "Disponible" : "No disponible"} · Stock: {it.stock ?? "—"}
                   </p>
                 </div>
                 <button onClick={() => openEditForm(it)} style={iconBtnStyle}>
@@ -273,7 +276,7 @@ export default function AdminArmaItemsPage() {
               ))}
             </select>
 
-            <label style={labelStyle}>Precio (COP)</label>
+                  <label style={labelStyle}>Precio (COP)</label>
             <input
               style={inputStyle}
               type="number"
@@ -281,6 +284,16 @@ export default function AdminArmaItemsPage() {
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               placeholder="25000"
               required
+            />
+
+            <label style={labelStyle}>Stock (unidades disponibles)</label>
+            <input
+              style={inputStyle}
+              type="number"
+              min="0"
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              placeholder="ej: 5 (déjalo vacío si no llevas conteo)"
             />
 
             <label style={labelStyle}>Descripción</label>
