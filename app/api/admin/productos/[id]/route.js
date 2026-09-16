@@ -20,9 +20,10 @@ export async function PUT(request, { params }) {
       price: price || null,
       bullets: bullets || [],
            available: available !== false,
-      image: image || null,
+           image: image || null,
       packaging_slug: packaging_slug || null,
       stock: stock === "" || stock === undefined ? null : stock,
+      variants: variants || null,
     })
     .eq("id", id)
     .select()

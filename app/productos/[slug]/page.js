@@ -35,6 +35,15 @@ function ProductPhoto({ slug, index = 1, alt, ratio = "1 / 1", label = "Imagen p
     </div>
   );
 }
+
+function getFirstAvailableVariant(variants) {
+  if (!variants || variants.length === 0) return null;
+  const available = variants.find((v) => v.available !== false);
+  return (available || variants[0]).name;
+}
+
+
+
 function ProductGallery({ slug, name, packaging, image }) {
   const [active, setActive] = useState(1);
   return (
@@ -80,7 +89,7 @@ export default function ProductDetailPage({ params }) {
   const [dudasOpen, setDudasOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [ribbon, setRibbon] = useState("Blanco");
-  const [variant, setVariant] = useState(product?.variants ? product.variants[0] : null);
+    const [variant, setVariant] = useState(getFirstAvailableVariant(product?.variants));
   const [customName, setCustomName] = useState("");
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -95,9 +104,9 @@ export default function ProductDetailPage({ params }) {
 
   // Si los productos llegan después del primer render (carga desde Supabase),
   // selecciona la primera variante en cuanto el producto esté disponible.
-  useEffect(() => {
+   useEffect(() => {
     if (product?.variants && !variant) {
-      setVariant(product.variants[0]);
+      setVariant(getFirstAvailableVariant(product.variants));
     }
   }, [product, variant]);
 
@@ -229,7 +238,9 @@ export default function ProductDetailPage({ params }) {
         .ribbon-options { display:flex; gap: 10px; margin-bottom: 24px; }
         .ribbon-chip { border: 1px solid var(--taupe); background: none; padding: 8px 18px; border-radius: 8px;
           font-family:'Marcellus'; font-size: 13px; cursor:pointer; color: var(--ink); transition: all .2s; }
-        .ribbon-chip.active { border-color: var(--olive); background: var(--cream); color: var(--olive); }
+               .ribbon-chip.active { border-color: var(--olive); background: var(--cream); color: var(--olive); }
+        .ribbon-chip-disabled { opacity: 0.45; text-decoration: line-through; cursor: not-allowed; }
+        .ribbon-chip-disabled:hover { background: none !important; }
         .custom-name-row { margin-bottom: 20px; }
         .custom-name-input { display: block; margin-top: 8px; width: 100%; max-width: 240px; padding: 10px 14px;
           border: 1px solid var(--taupe); border-radius: 8px; font-family: 'Marcellus', serif; font-size: 14px;
@@ -385,9 +396,16 @@ export default function ProductDetailPage({ params }) {
           {product.variants && (
             <>
               <p className="pd-label">Elige tu opción: {variant}</p>
-              <div className="ribbon-options">
+                           <div className="ribbon-options">
                 {product.variants.map((v) => (
-                  <button key={v} className={`ribbon-chip ${variant === v ? "active" : ""}`} onClick={() => setVariant(v)}>{v}</button>
+                  <button
+                    key={v.name}
+                    className={`ribbon-chip ${variant === v.name ? "active" : ""} ${v.available === false ? "ribbon-chip-disabled" : ""}`}
+                    onClick={() => v.available !== false && setVariant(v.name)}
+                    disabled={v.available === false}
+                  >
+                    {v.name}{v.available === false ? " (Agotada)" : ""}
+                  </button>
                 ))}
               </div>
             </>

@@ -7,14 +7,7 @@ import { supabase } from "../lib/supabase";
 
 
 // Los 5 productos con selector de variante (Osito/Conejita, etc).
-const VARIANTS_BY_SLUG = {
-  indigo: ["Osito", "Conejita"],
-  coral: ["Osito", "Osita"],
-  bunny: ["Conejito", "Osita"],
-  newborn: ["Conejito", "Conejita"],
-};
 
-// El único producto con campo de nombre personalizado (Escencia -> termo).
 const CUSTOM_NAME_LABEL_BY_SLUG = {
   escencia: "Nombre para el termo",
 };
@@ -64,8 +57,7 @@ export function ProductsProvider({ children }) {
         installmentLabel: p.price
           ? `2 cuotas sin intereses de $${Math.round(p.price / 2).toLocaleString("es-CO")}`
           : "",
-        packaging: getPackagingBySlug(p.packaging_slug),
-        variants: VARIANTS_BY_SLUG[p.slug] || null,
+                packaging: getPackagingBySlug(p.packaging_slug),
         customNameLabel: CUSTOM_NAME_LABEL_BY_SLUG[p.slug] || null,
       }));
 

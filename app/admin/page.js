@@ -44,6 +44,7 @@ const emptyForm = {
    image: "",
   packaging_slug: "",
   stock: "",
+  variants: [],
 };
 
 export default function AdminPage() {
@@ -86,8 +87,9 @@ export default function AdminPage() {
       bullets: (p.bullets || []).join(", "),
       available: p.available,
           image: p.image || "",
-      packaging_slug: p.packaging_slug || "",
+           packaging_slug: p.packaging_slug || "",
       stock: p.stock ?? "",
+      variants: p.variants || [],
     });
     setShowForm(true);
     setErrorMsg("");
@@ -136,8 +138,9 @@ export default function AdminPage() {
         .filter(Boolean),
       available: form.available,
            image: form.image || null,
-      packaging_slug: form.packaging_slug || null,
+           packaging_slug: form.packaging_slug || null,
       stock: form.stock !== "" ? parseInt(form.stock, 10) : null,
+      variants: form.variants && form.variants.length > 0 ? form.variants : null,
     };
 
     const url = form.id ? `/api/admin/productos/${form.id}` : "/api/admin/productos";
@@ -337,6 +340,28 @@ export default function AdminPage() {
               onChange={(e) => setForm({ ...form, stock: e.target.value })}
               placeholder="ej: 5 (déjalo vacío si no llevas conteo)"
             />
+
+                      {form.variants && form.variants.length > 0 && (
+              <>
+                <label style={labelStyle}>Opciones de esta caja</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 6 }}>
+                  {form.variants.map((v, i) => (
+                    <label key={v.name} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#4A3A2C" }}>
+                      <input
+                        type="checkbox"
+                        checked={v.available !== false}
+                        onChange={(e) => {
+                          const updated = [...form.variants];
+                          updated[i] = { ...updated[i], available: e.target.checked };
+                          setForm({ ...form, variants: updated });
+                        }}
+                      />
+                      {v.name} {v.available === false ? "(agotada)" : ""}
+                    </label>
+                  ))}
+                </div>
+              </>
+            )}
 
             <label style={labelStyle}>Bullets (separados por coma)</label>
             <textarea
