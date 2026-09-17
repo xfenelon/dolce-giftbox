@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Trash2, Pencil, Plus, X } from "lucide-react";
+import { Trash2, Pencil, Plus, X, Ban, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabaseAuth } from "../lib/supabaseAuth";
@@ -179,9 +179,31 @@ export default function AdminPage() {
     }
   };
 
-  const handleDelete = async (id) => {
+   const handleDelete = async (id) => {
     if (!confirm("¿Seguro que quieres borrar este producto?")) return;
     await fetch(`/api/admin/productos/${id}`, { method: "DELETE" });
+    loadProductos();
+  };
+
+  const handleToggleAvailable = async (p) => {
+    const payload = {
+      slug: p.slug,
+      name: p.name,
+      category: p.category,
+      price: p.price,
+      bullets: p.bullets || [],
+      available: !p.available,
+      image: p.image || null,
+      packaging_slug: p.packaging_slug || null,
+      stock: p.stock,
+      variants: p.variants || null,
+      option_groups: p.option_groups || null,
+    };
+    await fetch(`/api/admin/productos/${p.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
     loadProductos();
   };
   
@@ -284,6 +306,13 @@ export default function AdminPage() {
                     {p.category} · ${Number(p.price).toLocaleString("es-CO")} · {p.available ? "Disponible" : "No disponible"} · Stock: {p.stock ?? "—"}
                   </p>
                 </div>
+                                <button
+                  onClick={() => handleToggleAvailable(p)}
+                  title={p.available ? "Marcar como agotado" : "Marcar como disponible"}
+                  style={{ ...iconBtnStyle, color: p.available ? "#C97B4A" : "#4C8B5A" }}
+                >
+                  {p.available ? <Ban size={16} /> : <CheckCircle2 size={16} />}
+                </button>
                 <button onClick={() => openEditForm(p)} style={iconBtnStyle}>
                   <Pencil size={16} />
                 </button>

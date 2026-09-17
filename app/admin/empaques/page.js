@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Trash2, Pencil, Plus, X, ArrowLeft } from "lucide-react";
+import { Trash2, Pencil, Plus, X, ArrowLeft, Ban, CheckCircle2 } from "lucide-react";
 
 const emptyForm = {
   id: null,
@@ -128,6 +128,25 @@ export default function AdminEmpaquesPage() {
     loadEmpaques();
   };
 
+  const handleToggleAvailable = async (e) => {
+    const payload = {
+      slug: e.slug,
+      name: e.name,
+      material: e.material,
+      dimensions: e.dimensions,
+      price: e.price,
+      available: !e.available,
+      photo: e.photo,
+      stock: e.stock,
+    };
+    await fetch(`/api/admin/empaques/${e.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    loadEmpaques();
+  };
+
   return (
     <div style={{ fontFamily: "'Marcellus', serif", minHeight: "100vh", background: "#F4EAE1", padding: "40px 5vw" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
@@ -190,6 +209,13 @@ export default function AdminEmpaquesPage() {
                     {e.material} · {e.dimensions} · ${Number(e.price).toLocaleString("es-CO")} · {e.available ? "Disponible" : "No disponible"} · Stock: {e.stock ?? "—"}
                   </p>
                 </div>
+                                <button
+                  onClick={() => handleToggleAvailable(e)}
+                  title={e.available ? "Marcar como agotado" : "Marcar como disponible"}
+                  style={{ ...iconBtnStyle, color: e.available ? "#C97B4A" : "#4C8B5A" }}
+                >
+                  {e.available ? <Ban size={16} /> : <CheckCircle2 size={16} />}
+                </button>
                 <button onClick={() => openEditForm(e)} style={iconBtnStyle}>
                   <Pencil size={16} />
                 </button>

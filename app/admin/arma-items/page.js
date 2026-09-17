@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Trash2, Pencil, Plus, X, ArrowLeft } from "lucide-react";
+import { Trash2, Pencil, Plus, X, ArrowLeft, Ban, CheckCircle2 } from "lucide-react";
 
 const CATEGORIES = [
   "Cuidado personal",
@@ -143,9 +143,30 @@ export default function AdminArmaItemsPage() {
     }
   };
 
-  const handleDelete = async (id) => {
+   const handleDelete = async (id) => {
     if (!confirm("¿Seguro que quieres borrar este producto?")) return;
     await fetch(`/api/admin/arma-items/${id}`, { method: "DELETE" });
+    loadItems();
+  };
+
+  const handleToggleAvailable = async (it) => {
+    const payload = {
+      slug: it.slug,
+      name: it.name,
+      category: it.category,
+      price: it.price,
+      available: !it.available,
+      description: it.description || "",
+      image: it.image || "",
+      stock: it.stock,
+      option_label: it.option_label || null,
+      option_values: it.option_values || null,
+    };
+    await fetch(`/api/admin/arma-items/${it.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
     loadItems();
   };
 
@@ -233,6 +254,13 @@ export default function AdminArmaItemsPage() {
                     {it.category} · ${Number(it.price).toLocaleString("es-CO")} · {it.available ? "Disponible" : "No disponible"} · Stock: {it.stock ?? "—"}{it.option_label ? ` · ${it.option_label}: ${(it.option_values || []).length} valores` : ""}
                   </p>
                 </div>
+                                <button
+                  onClick={() => handleToggleAvailable(it)}
+                  title={it.available ? "Marcar como agotado" : "Marcar como disponible"}
+                  style={{ ...iconBtnStyle, color: it.available ? "#C97B4A" : "#4C8B5A" }}
+                >
+                  {it.available ? <Ban size={16} /> : <CheckCircle2 size={16} />}
+                </button>
                 <button onClick={() => openEditForm(it)} style={iconBtnStyle}>
                   <Pencil size={16} />
                 </button>
