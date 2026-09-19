@@ -154,7 +154,8 @@ export default function ProductDetailPage({ params }) {
   }
 
   
-  const isPeluche = product.category === "Peluches de apego";
+    const isPeluche = product.category === "Peluches de apego";
+  const canBuy = product.available !== false && (product.stock === null || product.stock === undefined || product.stock > 0);
 
   const handleAddToCart = () => {
     addItem({
@@ -270,7 +271,9 @@ export default function ProductDetailPage({ params }) {
           font-family:'Marcellus'; font-size: 13px; cursor:pointer; color: var(--ink); transition: all .2s; }
                .ribbon-chip.active { border-color: var(--olive); background: var(--cream); color: var(--olive); }
         .ribbon-chip-disabled { opacity: 0.45; text-decoration: line-through; cursor: not-allowed; }
-        .ribbon-chip-disabled:hover { background: none !important; }
+               .ribbon-chip-disabled:hover { background: none !important; }
+        .pd-agotado-badge { display: inline-block; background: #FBEAEA; color: #A23B3B; font-size: 12.5px; padding: 4px 12px; border-radius: 999px; margin: 6px 0 0; }
+        .btn-add-cart:disabled { opacity: 0.5; cursor: not-allowed; }
         .custom-name-row { margin-bottom: 20px; }
         .custom-name-input { display: block; margin-top: 8px; width: 100%; max-width: 240px; padding: 10px 14px;
           border: 1px solid var(--taupe); border-radius: 8px; font-family: 'Marcellus', serif; font-size: 14px;
@@ -419,7 +422,8 @@ export default function ProductDetailPage({ params }) {
         
      
 <div className="pd-info">
-          <h1>{product.name}</h1>
+                    <h1>{product.name}</h1>
+          {!canBuy && <p className="pd-agotado-badge">Agotado</p>}
           <p className="pd-price">{product.priceLabel}</p>
           <p className="pd-installments">{product.installmentLabel}</p>
 
@@ -500,8 +504,8 @@ export default function ProductDetailPage({ params }) {
               <span>{qty}</span>
               <button onClick={() => setQty((q) => q + 1)} aria-label="Más"><Plus size={14} /></button>
             </div>
-            <button className="btn-add-cart" onClick={handleAddToCart}>
-              {added ? "¡Agregado!" : "Agregar al carrito"}
+                      <button className="btn-add-cart" onClick={handleAddToCart} disabled={!canBuy}>
+              {!canBuy ? "Agotado" : added ? "¡Agregado!" : "Agregar al carrito"}
             </button>
           </div>
 

@@ -429,10 +429,10 @@ function ProductosPageContent() {
         ) : (
         <div className="product-grid">
           {pageProducts.map((p) => (
-                                 <Link href={`/productos/${p.slug}`} className={`product-card ${p.available === false ? "unavailable" : ""}`} key={p.slug}>
+                                                                <Link href={`/productos/${p.slug}`} className={`product-card ${(p.available === false || (p.stock !== null && p.stock !== undefined && p.stock <= 0)) ? "unavailable" : ""}`} key={p.slug}>
               <div className="product-card-photo-wrap">
                 <ProductPhoto slug={p.slug} index={1} alt={p.name} label={p.name} packagingPhoto={p.packaging?.photo} image={p.image} />
-                {p.available === false && <span className="product-agotado-badge">Agotado</span>}
+                                {(p.available === false || (p.stock !== null && p.stock !== undefined && p.stock <= 0)) && <span className="product-agotado-badge">Agotado</span>}
               </div>
               <h3>{p.name}</h3>
               <p>{p.priceLabel}</p>

@@ -97,7 +97,8 @@ function ArmaProductCard({ item, addItem, highlighted }) {
   const [optionValue, setOptionValue] = useState(getFirstAvailableOptionValue(item.option_values));
   const hasOptions = item.option_values && item.option_values.length > 0;
   const selectedOutOfStock = hasOptions && item.option_values.find((v) => v.name === optionValue)?.stock === 0;
-  const canAdd = item.available && (!hasOptions || !selectedOutOfStock);
+    const itemInStock = item.stock === null || item.stock === undefined || item.stock > 0;
+  const canAdd = item.available && itemInStock && (!hasOptions || !selectedOutOfStock);
 
   const handleAdd = () => {
     addItem({
