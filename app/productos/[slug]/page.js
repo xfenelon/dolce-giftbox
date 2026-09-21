@@ -155,7 +155,12 @@ export default function ProductDetailPage({ params }) {
 
   
     const isPeluche = product.category === "Peluches de apego";
-  const canBuy = product.available !== false && (product.stock === null || product.stock === undefined || product.stock > 0);
+   const variantOk = !product.variants || product.variants.length === 0 || product.variants.find((v) => v.name === variant)?.available !== false;
+  const optionsOk = !product.option_groups || product.option_groups.every((g) => {
+    const chosen = g.values.find((v) => v.name === itemOptions[g.label]);
+    return !chosen || chosen.stock !== 0;
+  });
+  const canBuy = product.available !== false && (product.stock === null || product.stock === undefined || product.stock > 0) && variantOk && optionsOk;
 
   const handleAddToCart = () => {
     addItem({
