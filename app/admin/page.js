@@ -6,16 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabaseAuth } from "../lib/supabaseAuth";
 
-const CATEGORIES = [
-  "Bebé",
-  "Cumpleaños mujer",
-  "Cumpleaños hombre",
-  "Para mujer",
-  "Para hombre",
-  "Recuperación/Condolencias",
-  "Ramo de flores naturales",
-  "Peluches de apego",
-];
+
 
 const PACKAGING_OPTIONS = [
   "",
@@ -37,7 +28,7 @@ const emptyForm = {
   id: null,
   slug: "",
   name: "",
-  category: CATEGORIES[0],
+    category: "",
   price: "",
   bullets: "",
   available: true,
@@ -49,7 +40,8 @@ const emptyForm = {
 };
 
 export default function AdminPage() {
-  const [productos, setProductos] = useState([]);
+    const [productos, setProductos] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState("Todos");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -69,12 +61,15 @@ export default function AdminPage() {
       });
   };
 
-  useEffect(() => {
+   useEffect(() => {
     loadProductos();
+    fetch("/api/admin/categorias")
+      .then((res) => res.json())
+      .then((data) => setCategories((data.categorias || []).map((c) => c.name)));
   }, []);
 
   const openNewForm = () => {
-    setForm(emptyForm);
+    setForm({ ...emptyForm, category: categories[0] || "" });
     setShowForm(true);
     setErrorMsg("");
   };
@@ -252,7 +247,7 @@ export default function AdminPage() {
         </div>
 
                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
-          {[{ label: "Todos", count: productos.length }, ...CATEGORIES.map((c) => ({ label: c, count: productos.filter((p) => p.category === c).length }))].map(({ label, count }) => (
+                    {[{ label: "Todos", count: productos.length }, ...categories.map((c) => ({ label: c, count: productos.filter((p) => p.category === c).length }))].map(({ label, count }) => (
             <button
               key={label}
               onClick={() => setCategoryFilter(label)}
@@ -387,7 +382,7 @@ export default function AdminPage() {
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
             >
-              {CATEGORIES.map((c) => (
+                            {categories.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
