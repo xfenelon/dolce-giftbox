@@ -241,6 +241,7 @@ const validateEmailField = (email, setError) => {
     setSubmitting(true);
 
       const orderItems = items.map((i) => ({
+      slug: i.slug,
       name: i.name,
       qty: i.qty,
       price: i.price,

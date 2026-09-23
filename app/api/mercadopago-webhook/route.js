@@ -40,6 +40,13 @@ export async function POST(request) {
     p_payment_id: String(paymentId),
   });
 
+  const { error: stockError } = await supabase.rpc("descontar_stock_pedido", {
+    p_order_id: orderId,
+  });
+  if (stockError) {
+    console.error("Error descontando stock del pedido:", stockError);
+  }
+
   const { data: order, error: orderError } = await supabase
     .from("pedidos")
     .select("*")
